@@ -22,7 +22,9 @@ const Interaction = module.exports = bookshelf.Model.extend({
           external_id: externalId
         })
       })
-      .fetch()
+      .fetch({
+        withRelated: ['contacts']
+      })
       .then((obj) => {
         if (obj) {
           return obj

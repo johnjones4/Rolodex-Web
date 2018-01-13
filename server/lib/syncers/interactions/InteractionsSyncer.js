@@ -23,19 +23,31 @@ class InteractionsSyncer extends Syncer {
       })
   }
 
+  getLastSyncDate () {
+    return this.config.lastSync || (new Date(new Date().getTime() - (1000 * 60 * 60 * 24 * 7)))
+  }
+
   getRecentInteractions (contacts) {
     throw new Error('Must override!')
   }
 
   saveInteraction (interaction) {
+    console.log('Logging interaction "' + interaction.description + '"')
     return Interaction.getOrCreate(interaction.source, interaction.externalId)
-      .then((interaction) => {
-        return interaction.contacts().attach(interaction.contacts)
-          .then(() => interaction)
+      .then((_interaction) => {
+        const addContactIds = interaction.contacts
+          .map(contact => contact.get('id'))
+          .filter(contactId => !_interaction.related('contacts').get(contactId))
+        return _interaction.contacts().attach(addContactIds)
+          .then(() => _interaction)
       })
-      .then((interaction) => {
-        interaction.set({type: interaction.type})
-        return interaction.save()
+      .then((_interaction) => {
+        _interaction.set({
+          type: interaction.type,
+          description: interaction.description,
+          date: interaction.date
+        })
+        return _interaction.save()
       })
   }
 

@@ -24,9 +24,11 @@ exports.init = () => {
         if (!exists) {
           return knex.schema.createTable('interactions', (table) => {
             table.increments('id').primary().notNullable()
-            table.string('external_id', 255).notNullable()
+            table.string('external_id', 512).notNullable()
             table.string('source', 255).notNullable()
-            table.string('type', 255).notNullable()
+            table.string('type', 255)
+            table.dateTime('date')
+            table.string('description', 255)
             table.unique(['external_id', 'source'])
             table.timestamps()
           })
@@ -40,6 +42,7 @@ exports.init = () => {
             table.increments('id').primary().notNullable()
             table.integer('contact_id').notNullable().references('id').inTable('contacts')
             table.integer('interaction_id').notNullable().references('id').inTable('interactions')
+            table.unique(['contact_id', 'interaction_id'])
           })
         }
       })
@@ -77,6 +80,7 @@ exports.init = () => {
             table.increments('id').primary().notNullable()
             table.integer('contact_id').notNullable().references('id').inTable('contacts')
             table.integer('location_id').notNullable().references('id').inTable('locations')
+            table.unique(['contact_id', 'location_id'])
           })
         }
       })
