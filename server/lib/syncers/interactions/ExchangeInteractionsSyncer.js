@@ -1,6 +1,7 @@
 const ews = require('ews-javascript-api')
 const EWSFactory = require('../../util/EWSFactory')
 const InteractionsSyncer = require('./InteractionsSyncer')
+const {interactionTypes} = require('../../consts')
 
 class ExchangeInteractionsSyncer extends InteractionsSyncer {
   getRecentInteractions (contacts) {
@@ -70,7 +71,7 @@ class ExchangeInteractionsSyncer extends InteractionsSyncer {
                 }
                 return false
               })
-              return this.mapItemToInteraction(item, 'email_received', 'DateTimeReceived', fromContacts)
+              return this.mapItemToInteraction(item, interactionTypes.EMAIL_RECEIVED, 'DateTimeReceived', fromContacts)
             }).forEach((item) => interactions.push(item))
             return searchNextFolder(folderIds, folderIndex + 1, interactions)
           })
@@ -113,7 +114,7 @@ class ExchangeInteractionsSyncer extends InteractionsSyncer {
             )
             const matchingContacts = this.getContactsMatchEmails(contacts, toEmails)
             if (matchingContacts.length > 0) {
-              return this.mapItemToInteraction(item, 'email_sent', 'DateTimeSent', matchingContacts)
+              return this.mapItemToInteraction(item, interactionTypes.EMAIL_SENT, 'DateTimeSent', matchingContacts)
             } else {
               return false
             }
@@ -141,7 +142,7 @@ class ExchangeInteractionsSyncer extends InteractionsSyncer {
             )
             const matchingContacts = this.getContactsMatchEmails(contacts, emails)
             if (matchingContacts.length > 0) {
-              return this.mapItemToInteraction(item, 'appointment', 'Start', matchingContacts)
+              return this.mapItemToInteraction(item, interactionTypes.APPOINTMENT, 'Start', matchingContacts)
             } else {
               return false
             }

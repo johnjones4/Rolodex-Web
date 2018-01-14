@@ -51,11 +51,34 @@ class InteractionsSyncer extends Syncer {
       })
   }
 
+  dedupeInteractions (interactions) {
+    const map = {}
+    const deleteList = []
+    interactions.forEach((interaction, index) => {
+      const key = interaction.source + '_' + interaction.externalId
+      if (map[key] >= 0) {
+        deleteList.push(index)
+        interaction.contacts.forEach((contact) => {
+          const searchIndex = interactions[map[key]].contacts.find((_contact) => _contact.get('id') === contact.get('id'))
+          if (searchIndex < 0) {
+            interactions[map[key]].contacts.push(contact)
+          }
+        })
+      }
+      map[key] = 1
+    })
+    deleteList.forEach((index) => {
+      interactions.splice(index, 1)
+    })
+    return interactions
+  }
+
   run () {
     return this.loadSyncContacts()
       .then((contacts) => {
         return this.getRecentInteractions(contacts)
       })
+      .then((interactions) => this.dedupeInteractions(interactions))
       .then((interactions) => {
         return Promise.all(
           interactions.map((interaction) => this.saveInteraction(interaction))

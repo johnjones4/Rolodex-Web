@@ -7,3 +7,9 @@ exports.googleContacts = {
   clientSecret: process.env.GOOGLE_CONTACTS_CLIENT_SECRET,
   redirectURL: exports.rootUrl + '/auth/googlecontacts/callback'
 }
+
+exports.interactionTypes = {
+  EMAIL_RECEIVED: 'email_received',
+  EMAIL_SENT: 'email_sent',
+  APPOINTMENT: 'appointment'
+}

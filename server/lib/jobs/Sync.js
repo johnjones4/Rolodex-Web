@@ -3,15 +3,17 @@ const {
   ExchangeContactsSyncer
 } = require('../syncers/contacts')
 const {
-  ExchangeInteractionsSyncer
+  ExchangeInteractionsSyncer,
+  IMAPInteractionsSyncer
 } = require('../syncers/interactions')
 
 class Sync {
   constructor () {
     this.syncers = [
-      // new GoogleContactsSyncer(),
-      // new ExchangeContactsSyncer(),
-      new ExchangeInteractionsSyncer()
+      new GoogleContactsSyncer(),
+      new ExchangeContactsSyncer(),
+      new ExchangeInteractionsSyncer(),
+      new IMAPInteractionsSyncer()
     ]
   }
 
