@@ -13,10 +13,6 @@ const Contact = module.exports = bookshelf.Model.extend({
     const Interaction = require('./Interaction')
     return this.belongsToMany(Interaction)
   },
-  'location': function () {
-    const Location = require('./Location')
-    return this.belongsTo(Location)
-  },
   'urls': function () {
     const URL = require('./URL')
     return this.hasMany(URL)
