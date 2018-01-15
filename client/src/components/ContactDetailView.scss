@@ -1,0 +1,18 @@
+.contact-detail-view {
+  padding: 1em;
+
+  .contact-detail-view-content {
+    max-width: 800px;
+    margin: auto;
+  }
+
+  .contact-detail-view-list {
+    margin: 0;
+    padding: 0;
+    li {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+  }
+}

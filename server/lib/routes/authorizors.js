@@ -1,6 +1,6 @@
 const {
   GoogleContactsSyncer
-} = require('../syncers')
+} = require('../syncers/contacts')
 
 exports.startGoogleContacts = (req, res, next) => {
   const googleContactsSyncer = new GoogleContactsSyncer()

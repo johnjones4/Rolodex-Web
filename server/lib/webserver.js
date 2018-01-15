@@ -15,10 +15,9 @@ exports.init = () => {
 
   app.param('contact', routes.contacts.loadContact)
   app.get('/api/contact', routes.contacts.getContacts)
-  app.put('/api/contact', routes.contacts.saveContact)
   app.post('/api/contact/:contact', routes.contacts.saveContact)
 
-  app.param('note', routes.contacts.loadNote)
+  app.param('note', routes.notes.loadNote)
   app.put('/api/note', routes.notes.saveNote)
   app.post('/api/note/:note', routes.notes.saveNote)
 

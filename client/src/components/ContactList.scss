@@ -1,0 +1,29 @@
+.contact-list {
+  table {
+    width: 100%;
+  }
+
+  .contacts-list-search {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+  }
+
+  .contacts-list-wrapper {
+    position: absolute;
+    top: 38px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: scroll;
+  }
+
+  .contents-list-name {
+    vertical-align: middle;
+  }
+
+  .contant-list-item {
+    cursor: pointer;
+  }
+}

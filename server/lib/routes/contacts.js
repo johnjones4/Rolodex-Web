@@ -53,6 +53,7 @@ exports.getContacts = (req, res, next) => {
   }
   Contact
     .query(params)
+    .orderBy('name')
     .fetchAll({
       withRelated: relatedFields
     })

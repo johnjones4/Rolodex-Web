@@ -1,0 +1,31 @@
+@import './variables.scss';
+
+$toolbarWidth: 55px;
+$contactListWidth: 400px;
+
+.toolbar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: $toolbarWidth;
+  height: 100%;
+  border-right: solid 1px $gray-400;
+}
+
+.contact-list {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: $toolbarWidth;
+  width: $contactListWidth;
+  border-right: solid 1px $gray-400;
+}
+
+.contact-detail-view {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: ($toolbarWidth + $contactListWidth);
+  right: 0;
+}
