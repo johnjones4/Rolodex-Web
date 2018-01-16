@@ -6,12 +6,14 @@ const {
   ExchangeInteractionsSyncer,
   IMAPInteractionsSyncer
 } = require('../syncers/interactions')
+const ContactsSyncManager = require('../syncers/contacts/ContactsSyncManager')
 
 class Sync {
   constructor () {
+    this.contactsSyncManager = new ContactsSyncManager()
     this.syncers = [
-      new GoogleContactsSyncer(),
-      new ExchangeContactsSyncer(),
+      new GoogleContactsSyncer(this.contactsSyncManager),
+      new ExchangeContactsSyncer(this.contactsSyncManager),
       new ExchangeInteractionsSyncer(),
       new IMAPInteractionsSyncer()
     ]
@@ -19,6 +21,9 @@ class Sync {
 
   run () {
     return this.runNext(0)
+      .then(() => {
+        return this.contactsSyncManager.saveUpdates()
+      })
   }
 
   runNext (index) {
@@ -34,7 +39,6 @@ class Sync {
           return this.runNext(index + 1)
         })
     } else {
-      console.log('Done Sync')
       return Promise.resolve()
     }
   }
