@@ -8,7 +8,7 @@ class ContactsSyncManager {
   saveUpdates () {
     const saveNextContact = (index) => {
       if (index < this.contacts.length) {
-        const contacts = this.contacts[index]
+        const contact = this.contacts[index]
         return this.findContactInDatabase(contact)
           .then((dbContact) => {
             if (dbContact) {
@@ -91,6 +91,7 @@ class ContactsSyncManager {
                 return _contact.save()
               })
           })
+          .then(() => saveNextContact(index + 1))
       }
     }
     return saveNextContact(0)
