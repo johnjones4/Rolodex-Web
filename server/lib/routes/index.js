@@ -1,3 +1,3 @@
-['authorizors', 'contacts', 'notes', 'configs'].forEach((route) => {
+['authorizors', 'contacts', 'notes', 'configs', 'sync'].forEach((route) => {
   exports[route] = require('./' + route)
 })

@@ -65,7 +65,7 @@ class ExchangeInteractionsSyncer extends InteractionsSyncer {
             items.items.map((item) => {
               const fromContacts = contacts.filter((contact) => {
                 for (let i = 0; i < contact.related('emails').length; i++) {
-                  if (contact.related('emails').at(i).get('email').toLowerCase() === item.From.address.trim().toLowerCase()) {
+                  if (item.From && contact.related('emails').at(i).get('email').toLowerCase() === item.From.address.trim().toLowerCase()) {
                     return true
                   }
                 }
@@ -138,8 +138,8 @@ class ExchangeInteractionsSyncer extends InteractionsSyncer {
           .map(({item}) => {
             const emails = [].concat(
               item.RequiredAttendees.items.map((emailAddress) => emailAddress.address.trim().toLowerCase()),
-              [item.Organizer.address.trim().toLowerCase()]
-            )
+              [item.Organizer && item.Organizer.address.trim().toLowerCase()]
+            ).filter(e => !(!e))
             const matchingContacts = this.getContactsMatchEmails(contacts, emails)
             if (matchingContacts.length > 0) {
               return this.mapItemToInteraction(item, interactionTypes.APPOINTMENT, 'Start', matchingContacts)

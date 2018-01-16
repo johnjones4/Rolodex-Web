@@ -13,7 +13,6 @@ class InteractionsSyncer extends Syncer {
         withRelated: [
           'emails',
           'interactions',
-          'location',
           'urls',
           'phoneNumbers',
           'positions',
@@ -24,7 +23,7 @@ class InteractionsSyncer extends Syncer {
   }
 
   getLastSyncDate () {
-    return this.config.lastSync || (new Date(new Date().getTime() - (1000 * 60 * 60 * 24 * 7)))
+    return this.config.lastSync || (new Date(new Date().getTime() - (1000 * 60 * 60 * 24 * 90)))
   }
 
   getRecentInteractions (contacts) {
@@ -80,9 +79,14 @@ class InteractionsSyncer extends Syncer {
       })
       .then((interactions) => this.dedupeInteractions(interactions))
       .then((interactions) => {
-        return Promise.all(
-          interactions.map((interaction) => this.saveInteraction(interaction))
-        )
+        // TODO: may not be deduping properly
+        const saveNextInteraction = (index) => {
+          if (index < interactions.length) {
+            return this.saveInteraction(interactions[index])
+              .then(() => saveNextInteraction(index + 1))
+          }
+        }
+        return saveNextInteraction(0)
       })
       .then(() => {
         return super.run()

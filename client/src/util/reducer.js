@@ -37,8 +37,24 @@ const contacts = (state = initialContactsState, action) => {
   }
 }
 
+const initialSyncState = {
+  isSyncing: false
+}
+
+const sync = (state = initialSyncState, action) => {
+  switch (action.type) {
+    case ACTIONS.SET_ISSYNCING:
+      return Object.assign({}, state, {
+        isSyncing: action.isSyncing
+      })
+    default:
+      return state
+  }
+}
+
 const rootReducer = combineReducers({
-  contacts
+  contacts,
+  sync
 })
 
 export default rootReducer

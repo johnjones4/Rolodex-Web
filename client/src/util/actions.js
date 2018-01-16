@@ -51,3 +51,31 @@ export const setActiveContact = (contact) => {
     id: contact.id
   }
 }
+
+export const checkSyncing = () => {
+  return (dispatch, getState) => {
+    fetch('/api/sync')
+      .then((res) => res.json())
+      .then(({isSyncing}) => {
+        dispatch({
+          type: ACTIONS.SET_ISSYNCING,
+          isSyncing
+        })
+      })
+  }
+}
+
+export const startSyncing = () => {
+  return (dispatch, getState) => {
+    fetch('/api/sync', {
+      method: 'POST'
+    })
+      .then((res) => res.json())
+      .then(({isSyncing}) => {
+        dispatch({
+          type: ACTIONS.SET_ISSYNCING,
+          isSyncing
+        })
+      })
+  }
+}

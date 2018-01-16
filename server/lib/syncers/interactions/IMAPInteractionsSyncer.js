@@ -50,7 +50,7 @@ class IMAPInteractionsSyncer extends InteractionsSyncer {
   }
 
   extractEmailAddress (string) {
-    const start = string.indexOf('<')
+    const start = string.indexOf('<') + 1
     const end = string.indexOf('>')
     return string.substring(start, end).trim()
   }
@@ -92,7 +92,7 @@ class IMAPInteractionsSyncer extends InteractionsSyncer {
     const searchNextEmail = (index, emailIds) => {
       if (index < emailAddresses.length) {
         return new Promise((resolve, reject) => {
-          const searchCrit = [[searchField, emailAddresses[index]]]
+          const searchCrit = [[searchField, emailAddresses[index]], ['SINCE', this.getLastSyncDate()]]
           imap.search(searchCrit, (err, results) => {
             if (err) {
               reject(err)
@@ -150,7 +150,7 @@ class IMAPInteractionsSyncer extends InteractionsSyncer {
         (email.to && email.to.length) ? email.to.map((email) => this.extractEmailAddress(email).toLowerCase()) : [],
         (email.cc && email.cc.length) ? email.cc.map((email) => this.extractEmailAddress(email).toLowerCase()) : [],
         (email.bcc && email.bcc.length) ? email.bcc.map((email) => this.extractEmailAddress(email).toLowerCase()) : []
-      )
+      ).filter((email) => email && email.trim().length > 0)
       const interactionContacts = contacts.filter((contact) => {
         return contact.related('emails').filter(email => toEmails.indexOf(email.get('email').toLowerCase()) >= 0).length > 0
       })

@@ -87,7 +87,7 @@ class ContactsSyncer extends Syncer {
                 return Location
                   .getOrCreate(contact.locations[index])
                   .then((location) => {
-                    const hasLocation = _contact.related('locations').filter((_location) => _location.get('id') === location.get('id')).length >= 0
+                    const hasLocation = _contact.related('locations').filter((_location) => _location.get('id') === location.get('id')).length > 0
                     if (!hasLocation) {
                       return _contact.locations().attach([location.get('id')])
                     }

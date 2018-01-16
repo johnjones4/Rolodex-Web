@@ -1,9 +1,30 @@
+@import '../variables.scss';
+
+@keyframes rotate {
+  from {
+    transform: rotate(0)
+  }
+
+  to {
+    transform: rotate(360deg)
+  }
+}
+
 .toolbar {
   display: flex;
   align-items: center;
   align-content: center;
   flex-direction: row;
+  background: $gray-800;
   .btn-group-vertical {
     margin: auto;
+  }
+
+  .sync-running {
+    width: 16px;
+    animation-duration: 4s;
+    animation-name: rotate;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
   }
 }

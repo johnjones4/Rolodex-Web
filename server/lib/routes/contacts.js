@@ -3,10 +3,12 @@ const Contact = require('../models/Contact')
 const relatedFields = [
   'emails',
   'interactions',
+  'interactions.notes',
   'locations',
   'urls',
   'phoneNumbers',
   'positions',
+  'positions.organization',
   'notes'
 ]
 

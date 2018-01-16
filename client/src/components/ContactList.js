@@ -16,6 +16,9 @@ import {
   InputGroupAddon
 } from 'reactstrap'
 import FontAwesome from 'react-fontawesome'
+import {
+  nextInteraction
+} from '../util/functions'
 
 class ContactList extends Component {
   constructor (props) {
@@ -53,21 +56,23 @@ class ContactList extends Component {
           </InputGroup>
         </div>
         <div className='contacts-list-wrapper'>
-          <Table size='sm' bordered hover>
+          <Table size='sm' bordered hover className='border-0'>
             <thead>
               <tr>
                 <th>Name</th>
-                <th>Tracking</th>
+                <th className='client-list-next-interaction-column text-center'>Last Interaction</th>
+                <th className='client-list-tracking-column text-center'>Tracking</th>
               </tr>
             </thead>
             <tbody>
               {
                 this.contactsList().map((contact) => {
                   return (
-                    <tr key={contact.id} className='contant-list-item' onClick={() => this.props.setActiveContact(contact)}>
-                      <td className='contents-list-name'>{contact.name}</td>
+                    <tr key={contact.id} className={['contant-list-item', (this.props.contacts.activeContactID === contact.id ? 'contact-list-item-selected' : '')].join(' ')} onClick={() => this.props.setActiveContact(contact)}>
+                      <td className='contacts-list-name'>{contact.name}</td>
+                      <td className='contacts-list-next-interaction text-center'>{nextInteraction(contact)}</td>
                       <td className='contacts-list-hidden-toggle text-center'>
-                        <Button color='secondary' size='sm' onClick={() => this.props.updateContact(contact, {hidden: !contact.hidden})}>
+                        <Button className='border' color='light' size='sm' onClick={() => this.props.updateContact(contact, {hidden: !contact.hidden})}>
                           <FontAwesome name={contact.hidden ? 'star-o' : 'star'} />
                         </Button>
                       </td>
@@ -99,7 +104,8 @@ const dispatchToProps = (dispatch) => {
 
 ContactList.propTypes = {
   contacts: PropTypes.shape({
-    contacts: PropTypes.array
+    contacts: PropTypes.array,
+    activeContactID: PropTypes.number
   }),
   loadContacts: PropTypes.func,
   updateContact: PropTypes.func,

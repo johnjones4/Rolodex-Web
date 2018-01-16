@@ -34,6 +34,7 @@ class Sync {
           return this.runNext(index + 1)
         })
     } else {
+      console.log('Done Sync')
       return Promise.resolve()
     }
   }

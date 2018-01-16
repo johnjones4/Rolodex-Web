@@ -1,4 +1,9 @@
+@import '../variables.scss';
+
 .contact-list {
+  border-right: solid 1px $gray-500;
+  background: $gray-100;
+
   table {
     width: 100%;
   }
@@ -19,11 +24,25 @@
     overflow: scroll;
   }
 
-  .contents-list-name {
+  .contacts-list-name,
+  .contacts-list-next-interaction {
     vertical-align: middle;
   }
 
   .contant-list-item {
     cursor: pointer;
+  }
+
+  .client-list-next-interaction-column {
+    width: 140px;
+  }
+
+  .client-list-tracking-column {
+    width: 50px;
+  }
+
+  .contact-list-item-selected td {
+    background: $primary;
+    color: white;
   }
 }

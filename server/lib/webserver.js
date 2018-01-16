@@ -26,5 +26,8 @@ exports.init = () => {
   app.put('/api/config', routes.configs.saveConfig)
   app.post('/api/config/:config', routes.configs.saveConfig)
 
+  app.get('/api/sync', routes.sync.checkSync)
+  app.post('/api/sync', routes.sync.startSync)
+
   return app
 }

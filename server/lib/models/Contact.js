@@ -44,6 +44,19 @@ const Contact = module.exports = bookshelf.Model.extend({
         .forEach((interaction) => {
           notes.push(interaction.related('note'))
         })
+    },
+    'lastInteraction': function () {
+      if (this.related('interactions').length > 0) {
+        let highestInteraction = null
+        this.related('interactions').forEach((interaction) => {
+          if (!highestInteraction || interaction.get('date').getTime() > highestInteraction.get('date').getTime()) {
+            highestInteraction = interaction
+          }
+        })
+        return highestInteraction
+      } else {
+        return null
+      }
     }
   }
 }, {

@@ -11,6 +11,10 @@ const Interaction = module.exports = bookshelf.Model.extend({
   'notes': function () {
     const Note = require('./Note')
     return this.hasMany(Note)
+  },
+  'parse': function (response) {
+    response.date = new Date(response.date)
+    return response
   }
 }, {
   getOrCreate: function (source, externalId) {
