@@ -7,6 +7,10 @@ const initialContactsState = {
   'showHidden': false
 }
 
+const getContactById = (state, id) => {
+  return state.contacts.findIndex((contact) => contact.id === id)
+}
+
 const contacts = (state = initialContactsState, action) => {
   switch (action.type) {
     case ACTIONS.SET_CONTACTS:
@@ -18,7 +22,7 @@ const contacts = (state = initialContactsState, action) => {
         showHidden: action.showHidden
       })
     case ACTIONS.UPDATE_CONTACT:
-      const contactIndex = state.contacts.findIndex((contact) => contact.id === action.contact.id)
+      const contactIndex = getContactById(state, action.contact.id)
       if (contactIndex >= 0) {
         const newContactList = state.contacts.slice(0)
         newContactList[contactIndex] = Object.assign({}, action.contact)
@@ -32,6 +36,55 @@ const contacts = (state = initialContactsState, action) => {
       return Object.assign({}, state, {
         activeContactID: action.id
       })
+    case ACTIONS.UPDATE_NOTE:
+      const contactIndex1 = getContactById(state, action.note.contact_id)
+      if (contactIndex1 >= 0) {
+        const newContactList = state.contacts.slice(0)
+        const notes = newContactList[contactIndex1].notes.slice(0)
+        const noteIndex = notes.findIndex((note) => note.id === action.note.id)
+        if (noteIndex >= 0) {
+          notes[noteIndex] = action.note
+        } else {
+          notes.push(action.note)
+        }
+        newContactList[contactIndex1] = Object.assign({}, newContactList[contactIndex1], {
+          notes
+        })
+        return Object.assign({}, state, {
+          contacts: newContactList
+        })
+      } else {
+        return state
+      }
+    case ACTIONS.ADD_INTERACTION:
+      const contactIndex2 = getContactById(state, action.interaction.contact_id)
+      if (contactIndex2 >= 0) {
+        const newContactList = state.contacts.slice(0)
+        newContactList[contactIndex1] = Object.assign({}, newContactList[contactIndex1], {
+          interactions: newContactList[contactIndex1].interactions.concat([action.interaction])
+        })
+        return Object.assign({}, state, {
+          contacts: newContactList
+        })
+      } else {
+        return state
+      }
+    case ACTIONS.REMOVE_NOTE:
+      const contactIndex3 = getContactById(state, action.note.contact_id)
+      if (contactIndex3 >= 0) {
+        const newContactList = state.contacts.slice(0)
+        const notes = newContactList[contactIndex3].notes.slice(0)
+        const noteIndex = notes.findIndex((note) => note.id === action.note.id)
+        notes.splice(noteIndex, 1)
+        newContactList[contactIndex3] = Object.assign({}, newContactList[contactIndex3], {
+          notes
+        })
+        return Object.assign({}, state, {
+          contacts: newContactList
+        })
+      } else {
+        return state
+      }
     default:
       return state
   }

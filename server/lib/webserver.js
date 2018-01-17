@@ -20,6 +20,9 @@ exports.init = () => {
   app.param('note', routes.notes.loadNote)
   app.put('/api/note', routes.notes.saveNote)
   app.post('/api/note/:note', routes.notes.saveNote)
+  app.delete('/api/note/:note', routes.notes.deleteNote)
+
+  app.put('/api/interaction', routes.interactions.saveInteraction)
 
   app.param('config', routes.configs.loadConfig)
   app.get('/api/config', routes.configs.getConfigs)

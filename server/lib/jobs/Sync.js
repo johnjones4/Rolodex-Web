@@ -11,24 +11,29 @@ const ContactsSyncManager = require('../syncers/contacts/ContactsSyncManager')
 class Sync {
   constructor () {
     this.contactsSyncManager = new ContactsSyncManager()
-    this.syncers = [
+    this.contactsSyncers = [
       new GoogleContactsSyncer(this.contactsSyncManager),
-      new ExchangeContactsSyncer(this.contactsSyncManager),
+      new ExchangeContactsSyncer(this.contactsSyncManager)
+    ]
+    this.interactionSyncers = [
       new ExchangeInteractionsSyncer(),
       new IMAPInteractionsSyncer()
     ]
   }
 
   run () {
-    return this.runNext(0)
+    return this.runNext(this.contactsSyncers, 0)
       .then(() => {
         return this.contactsSyncManager.saveUpdates()
       })
+      .then(() => {
+        return this.runNext(this.interactionSyncers, 0)
+      })
   }
 
-  runNext (index) {
-    if (index < this.syncers.length) {
-      const syncer = this.syncers[index]
+  runNext (syncerList, index) {
+    if (index < syncerList.length) {
+      const syncer = syncerList[index]
       return syncer.loadConfig()
         .then(() => {
           if (syncer.isReady()) {
@@ -36,7 +41,7 @@ class Sync {
           }
         })
         .then(() => {
-          return this.runNext(index + 1)
+          return this.runNext(syncerList, index + 1)
         })
     } else {
       return Promise.resolve()

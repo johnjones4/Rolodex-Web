@@ -30,6 +30,7 @@ const Location = module.exports = bookshelf.Model.extend({
             })
           }
         })
+        .catch((err) => console.error(err))
     }
   }
 }, {

@@ -104,7 +104,7 @@ exports.init = () => {
             table.increments('id').primary().notNullable()
             table.string('title', 255)
             table.integer('contact_id').notNullable().references('id').inTable('contacts')
-            table.integer('organization_id').notNullable().references('id').inTable('organizations')
+            table.integer('organization_id').references('id').inTable('organizations')
             table.timestamps()
           })
         }

@@ -14,8 +14,16 @@ import {
   startSyncing,
   loadContacts
 } from '../util/actions'
+import Settings from '../components/Settings'
 
 class Toolbar extends Component {
+  constructor (props) {
+    super(props)
+    this.state = {
+      settingsOpen: false
+    }
+  }
+
   componentWillReceiveProps (nextProps) {
     if (nextProps.sync.isSyncing) {
       setTimeout(() => {
@@ -37,13 +45,14 @@ class Toolbar extends Component {
           <Button color='secondary' onClick={() => this.props.toggleShowHidden()} title='Show/Hide tracked contacts'>
             <FontAwesome name={this.props.contacts.showHidden ? 'star-o' : 'star'} />
           </Button>
-          <Button color='secondary' title='Settings'>
+          <Button color='secondary' title='Settings' onClick={() => this.setState({settingsOpen: true})}>
             <FontAwesome name='gear' />
           </Button>
           <Button color='secondary' title='Sync data' onClick={() => this.props.startSyncing()}>
             <FontAwesome name='refresh' className={this.props.sync.isSyncing ? 'sync-running' : ''} />
           </Button>
         </ButtonGroup>
+        <Settings isOpen={this.state.settingsOpen} toggle={() => this.setState({settingsOpen: !this.state.settingsOpen})} />
       </div>
     )
   }

@@ -79,3 +79,57 @@ export const startSyncing = () => {
       })
   }
 }
+
+export const updateNote = (note) => {
+  return (dispatch, getState) => {
+    fetch('/api/note' + (note.id >= 0 ? '/' + note.id : ''), {
+      method: note.id >= 0 ? 'POST' : 'PUT',
+      body: JSON.stringify(note),
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    })
+      .then((res) => res.json())
+      .then((note) => {
+        dispatch({
+          type: ACTIONS.UPDATE_NOTE,
+          note
+        })
+      })
+  }
+}
+
+export const deleteNote = (note) => {
+  return (dispatch, getState) => {
+    fetch('/api/note' + (note.id >= 0 ? '/' + note.id : ''), {
+      method: 'DELETE'
+    })
+      .then(() => {
+        dispatch({
+          type: ACTIONS.REMOVE_NOTE,
+          note
+        })
+      })
+  }
+}
+
+export const addInteraction = (interaction) => {
+  return (dispatch, getState) => {
+    fetch('/api/interaction', {
+      method: 'PUT',
+      body: JSON.stringify(interaction),
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    })
+      .then((res) => res.json())
+      .then((interaction) => {
+        dispatch({
+          type: ACTIONS.ADD_INTERACTION,
+          interaction
+        })
+      })
+  }
+}

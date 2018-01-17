@@ -1,3 +1,4 @@
+@import './bootstrap/scss/mixins/_buttons.scss';
 @import './variables.scss';
 
 $toolbarWidth: 55px;
@@ -26,4 +27,8 @@ $contactListWidth: 500px;
   bottom: 0;
   left: ($toolbarWidth + $contactListWidth);
   right: 0;
+}
+
+.btn-xs {
+  @include button-size(($btn-padding-y-sm / 2), ($btn-padding-x-sm / 2), ($font-size-sm * 0.75), $btn-line-height-sm, $btn-border-radius-sm);
 }

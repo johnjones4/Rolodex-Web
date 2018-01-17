@@ -104,7 +104,7 @@ class GoogleContactsSyncer extends ContactsSyncer {
               object.emails = contact.emailAddresses.map((emailAddress) => emailAddress.value).filter((value) => !(!value) && value.trim().length > 0)
             }
             if (contact.phoneNumbers && contact.phoneNumbers.length > 0) {
-              object.phones = contact.phoneNumbers.map((phoneNumber) => phoneNumber.value).filter((value) => !(!value) && value.trim().length > 0)
+              object.phoneNumbers = contact.phoneNumbers.map((phoneNumber) => phoneNumber.value).filter((value) => !(!value) && value.trim().length > 0)
             }
             if (contact.urls && contact.urls.length > 0) {
               object.urls = contact.urls.map((url) => url.value).filter((value) => !(!value) && value.trim().length > 0)
@@ -123,10 +123,6 @@ class GoogleContactsSyncer extends ContactsSyncer {
           return []
         }
       })
-  }
-
-  uniqueIds () {
-    return ['googleId'].concat(super.uniqueIds())
   }
 
   getConfigKeyName () {

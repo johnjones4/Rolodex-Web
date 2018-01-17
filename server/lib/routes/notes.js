@@ -20,7 +20,7 @@ exports.loadNote = (req, res, next, id) => {
 }
 
 exports.saveNote = (req, res, next) => {
-  const note = req.contact || new Note()
+  const note = req.note || new Note()
   delete req.body.id
   delete req.body.created_at
   delete req.body.updated_at
@@ -28,6 +28,14 @@ exports.saveNote = (req, res, next) => {
   note.save()
     .then(() => {
       res.send(note.toJSON())
+    })
+    .catch(err => next(err))
+}
+
+exports.deleteNote = (req, res, next) => {
+  req.note.destroy()
+    .then(() => {
+      res.sendStatus(200)
     })
     .catch(err => next(err))
 }

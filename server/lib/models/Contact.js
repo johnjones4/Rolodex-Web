@@ -34,17 +34,6 @@ const Contact = module.exports = bookshelf.Model.extend({
     return this.hasMany(Note)
   },
   'virtuals': {
-    'allNotes': function () {
-      const notes = []
-      this.related('notes')
-        .forEach((note) => {
-          notes.push(note)
-        })
-      this.related('interactions')
-        .forEach((interaction) => {
-          notes.push(interaction.related('note'))
-        })
-    },
     'lastInteraction': function () {
       if (this.related('interactions').length > 0) {
         let highestInteraction = null

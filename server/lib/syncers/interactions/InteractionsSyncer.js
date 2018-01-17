@@ -23,7 +23,7 @@ class InteractionsSyncer extends Syncer {
   }
 
   getLastSyncDate () {
-    return this.config.lastSync || (new Date(new Date().getTime() - (1000 * 60 * 60 * 24 * 90)))
+    return this.config.lastSync || (new Date(new Date().getTime() - (1000 * 60 * 60 * 24 * 30)))
   }
 
   getRecentInteractions (contacts) {

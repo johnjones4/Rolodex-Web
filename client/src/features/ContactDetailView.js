@@ -17,15 +17,31 @@ import {
   Button
 } from 'reactstrap'
 import {
-  INTERACTION_TYPES,
+  INTERACTION_TYPES_STRINGS,
   UPDATE_FREQUENCIES
 } from '../util/consts'
 import {
   updateContact
 } from '../util/actions'
 import FontAwesome from 'react-fontawesome'
+import AddInteraction from '../components/AddInteraction'
+import NoteEditor from '../components/NoteEditor'
 
 class ContactDetailView extends Component {
+  constructor (props) {
+    super(props)
+    this.state = {
+      newInteraction: null,
+      newNote: null,
+      editingNote: null,
+      editingInteractionNote: null
+    }
+  }
+
+  componentWillReceiveProps (newProps) {
+    console.log(newProps)
+  }
+
   render () {
     const contact = this.getContact()
     return (
@@ -78,7 +94,7 @@ class ContactDetailView extends Component {
       <div className='contact-detail-view-preferences'>
         <h3>Preferences</h3>
         <FormGroup row>
-          <Label sm={4}>Update Frequency</Label>
+          <Label sm={4}>Outreach Frequency</Label>
           <Col sm={8}>
             <Input
               type='select'
@@ -138,22 +154,67 @@ class ContactDetailView extends Component {
     )
   }
 
+  addNote () {
+    this.setState({
+      newNote: {
+        contact_id: this.props.contacts.activeContactID,
+        note: ''
+      },
+      newInteraction: null,
+      editingNote: null
+    })
+  }
+
+  addInteraction () {
+    this.setState({
+      newInteraction: {
+        contact_id: this.props.contacts.activeContactID,
+        source: 'manual',
+        external_id: new Date().getTime()
+      },
+      newNote: null,
+      editingNote: null
+    })
+  }
+
+  editNote (note) {
+    this.setState({
+      newInteraction: null,
+      newNote: null,
+      editingNote: note.id
+    })
+  }
+
   renderTimeline (contact) {
     const events = this.generateTimeline(contact)
     return (
       <div className='contact-detail-view-timeline'>
         <h3>Timeline</h3>
-        <div>
-          <ButtonGroup size='sm'>
-            <Button color='success'>
+        <div className='text-center'>
+          <ButtonGroup>
+            <Button color='success' onClick={() => this.addNote()} className={this.state.newNote ? 'active' : ''}>
               <FontAwesome name='sticky-note' /> Add Note
             </Button>
-            <Button color='success'>
+            <Button color='success' onClick={() => this.addInteraction()} className={this.state.newInteraction ? 'active' : ''}>
               <FontAwesome name='users' /> Add Interaction
             </Button>
           </ButtonGroup>
         </div>
         <ListGroup>
+          {
+            this.state.newNote && (
+              <ListGroupItem>
+                <NoteEditor note={this.state.newNote} done={() => this.setState({newNote: null})} />
+              </ListGroupItem>
+            )
+          }
+          {
+            this.state.newInteraction && (
+              <ListGroupItem>
+                <AddInteraction interaction={this.state.newInteraction} done={() => this.setState({newInteraction: null})} />
+              </ListGroupItem>
+            )
+          }
           {
             events.map((event, i) => {
               return (
@@ -166,11 +227,7 @@ class ContactDetailView extends Component {
                       {event.date.toLocaleDateString()}
                     </small>
                   </div>
-                  { event.type === 'note' &&
-                    <ListGroupItemText>
-                      {event.note.note}
-                    </ListGroupItemText>
-                  }
+                  { this.renderTimelineBody(event) }
                 </ListGroupItem>
               )
             })
@@ -180,26 +237,34 @@ class ContactDetailView extends Component {
     )
   }
 
-  generateTimeline (contact) {
-    const interactionHeadingPrefix = (interaction) => {
-      switch (interaction.type) {
-        case INTERACTION_TYPES.APPOINTMENT:
-          return 'Meeting: '
-        case INTERACTION_TYPES.EMAIL_RECEIVED:
-          return 'Email Received: '
-        case INTERACTION_TYPES.EMAIL_SENT:
-          return 'Email Sent: '
-        default:
-          return ''
-      }
+  renderTimelineBody (event) {
+    switch (event.type) {
+      case 'note':
+        if (this.state.editingNote !== event.note.id) {
+          return (
+            <ListGroupItemText onClick={() => this.editNote(event.note)}>
+              {event.note.note}
+              <br />
+              <small>Click to edit</small>
+            </ListGroupItemText>
+          )
+        } else {
+          return (<NoteEditor note={event.note} done={() => this.setState({editingNote: null})} />)
+        }
+      case 'interaction':
+      default:
+        return null
     }
+  }
+
+  generateTimeline (contact) {
     const events = contact.interactions.map((interaction) => {
       return {
         'type': 'interaction',
         'date': new Date(interaction.date),
         'heading': (
           <span>
-            <strong>{interactionHeadingPrefix(interaction)}</strong>
+            <strong>{INTERACTION_TYPES_STRINGS[interaction]}</strong>
             {interaction.description}
           </span>
         ),

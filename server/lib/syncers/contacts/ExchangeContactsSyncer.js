@@ -10,7 +10,7 @@ class ExchangeContactsSyncer extends ContactsSyncer {
     return exch.FindItems(ews.WellKnownFolderName.Contacts, view)
       .then((results) => {
         if (results && results.items) {
-          results.items
+          return results.items
             .filter((record) => !(!record.propertyBag.properties.objects.Id))
             .map((record) => {
               const props = record.propertyBag.properties.objects
@@ -22,7 +22,7 @@ class ExchangeContactsSyncer extends ContactsSyncer {
                 contact.emails = _.values(props.EmailAddresses.entries.objects).map((entry) => entry.emailAddress.address)
               }
               if (props.PhysicalAddresses) {
-                contact.addresses = _.values(props.PhysicalAddresses.entries.objects).map((entry) => {
+                contact.locations = _.values(props.PhysicalAddresses.entries.objects).map((entry) => {
                   const loc = []
                   if (entry.propertyBag.items.objects.City) {
                     loc.push(entry.propertyBag.items.objects.City)
@@ -49,13 +49,10 @@ class ExchangeContactsSyncer extends ContactsSyncer {
               }
               return contact
             })
+        } else {
+          return []
         }
-        return []
       })
-  }
-
-  uniqueIds () {
-    return ['exchangeId'].concat(super.uniqueIds())
   }
 
   getConfigKeyName () {
