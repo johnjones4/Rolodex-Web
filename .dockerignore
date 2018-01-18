@@ -1,8 +1,9 @@
-node_modules
-*.sqlite
-.env
+server/node_modules
+client/node_modules
+server/database.sqlite
+server/.env
 coverage
-build
+server/build
 .DS_Store
 .env.local
 .env.development.local
