@@ -80,7 +80,7 @@ class Settings extends Component {
           <TabContent activeTab={this.state.activeTab}>
             {
               TABS.map((tab) => {
-                const config = this.props.config.configs.find((config) => config.key === tab.key)
+                const config = this.props.config.configs.find((config) => config.key === tab.key) || {config: {}, key: tab.key}
                 const configStr = config ? (config.configString || JSON.stringify(config.config, null, '  ')) : ''
                 return config && (
                   <TabPane key={tab.key} tabId={tab.key}>

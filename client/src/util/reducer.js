@@ -122,12 +122,15 @@ const config = (state = initialConfigState, action) => {
         newConfigs[configIndex] = Object.assign({}, newConfigs[configIndex], {
           config: action.config
         })
-        return Object.assign({}, state, {
-          configs: newConfigs
-        })
       } else {
-        return state
+        newConfigs.push({
+          key: action.key,
+          config: action.config
+        })
       }
+      return Object.assign({}, state, {
+        configs: newConfigs
+      })
     case ACTIONS.SET_CONFIG_STRING:
       const newConfigs1 = state.configs.slice(0)
       const configIndex1 = newConfigs1.findIndex((config) => config.key === action.key)
@@ -135,12 +138,16 @@ const config = (state = initialConfigState, action) => {
         newConfigs1[configIndex1] = Object.assign({}, newConfigs1[configIndex1], {
           configString: action.configString
         })
-        return Object.assign({}, state, {
-          configs: newConfigs1
-        })
       } else {
-        return state
+        newConfigs1.push({
+          key: action.key,
+          configString: action.configString,
+          config: {}
+        })
       }
+      return Object.assign({}, state, {
+        configs: newConfigs1
+      })
     default:
       return state
   }
