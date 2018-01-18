@@ -7,8 +7,10 @@ const Position = require('../../models/Position')
 const Location = require('../../models/Location')
 const Organization = require('../../models/Organization')
 const _ = require('lodash')
+const arrayUniq = require('array-uniq')
 
 const SYNC_CONTACTS = ['googleId', 'exchangeId', 'emails', 'name']
+const UNIQUE_PROPS = ['emails', 'phoneNumbers', 'urls', 'locations']
 
 class ContactsSyncManager {
   constructor () {
@@ -19,6 +21,9 @@ class ContactsSyncManager {
     const saveNextContact = (index) => {
       if (index < this.contacts.length) {
         const contact = this.contacts[index]
+        UNIQUE_PROPS.forEach((prop) => {
+          contact[prop] = arrayUniq(contact[prop])
+        })
         return this.findContactInDatabase(contact)
           .then((dbContact) => {
             if (dbContact) {
@@ -34,7 +39,7 @@ class ContactsSyncManager {
                 .then((dbContact) => {
                   return Promise.all([
                     Promise.all(dbContact.related('emails').map((email) => email.destroy())),
-                    dbContact.detach(dbContact.related('locations').map(location => location.get('id'))),
+                    dbContact.locations().detach(dbContact.related('locations').map(location => location.get('id'))),
                     Promise.all(dbContact.related('phoneNumbers').map((phone) => phone.destroy())),
                     Promise.all(dbContact.related('urls').map((url) => url.destroy())),
                     Promise.all(dbContact.related('positions').map((position) => position.destroy()))
@@ -158,7 +163,7 @@ class ContactsSyncManager {
           switch (SYNC_CONTACTS[propNum]) {
             case 'emails':
               return trySubPropIndex(Email, 0).then(contactFinalizer)
-            case 'phones':
+            case 'phoneNumbers':
               return trySubPropIndex(Phone, 0).then(contactFinalizer)
             case 'urls':
               return trySubPropIndex(URL, 0).then(contactFinalizer)
@@ -180,7 +185,7 @@ class ContactsSyncManager {
       return !(!SYNC_CONTACTS.find((propName) => {
         switch (propName) {
           case 'emails':
-          case 'phones':
+          case 'phoneNumbers':
           case 'urls':
             return contact[propName] && _contact[propName] && !(!_contact[propName].find((propValue) => {
               return contact[propName].indexOf(propValue) >= 0

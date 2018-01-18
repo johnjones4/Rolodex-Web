@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "array-uniq": "^1.0.3",
     "body-parser": "^1.18.2",
     "bookshelf": "^0.12.1",
     "bookshelf-json-columns": "^2.1.1",
