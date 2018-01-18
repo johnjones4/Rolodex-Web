@@ -14,8 +14,16 @@ import {
   TabPane,
   FormGroup,
   Input,
-  Label
+  Label,
+  Button
 } from 'reactstrap'
+import {
+  loadConfigs,
+  setConfigString,
+  setConfig,
+  saveConfigs
+} from '../util/actions'
+import './Settings.scss'
 
 const TABS = [
   {
@@ -43,6 +51,11 @@ class Settings extends Component {
       activeTab: TABS[0].key
     }
   }
+
+  componentWillMount () {
+    this.props.loadConfigs()
+  }
+
   render () {
     return (
       <Modal isOpen={this.props.isOpen} toggle={this.props.toggle} size='lg'>
@@ -63,50 +76,83 @@ class Settings extends Component {
               })
             }
           </Nav>
+          <br />
           <TabContent activeTab={this.state.activeTab}>
-            {this.renderImporterExchange()}
+            {
+              TABS.map((tab) => {
+                const config = this.props.config.configs.find((config) => config.key === tab.key)
+                const configStr = config ? (config.configString || JSON.stringify(config.config, null, '  ')) : ''
+                return config && (
+                  <TabPane key={tab.key} tabId={tab.key}>
+                    {tab.key === 'importer_googlecontacts'
+                      ? (
+                        <a href='/auth/googlecontacts' target='_blank' className='btn btn-success'>
+                          {config && config.config && config.config.accessToken ? 'Reauthorize Google' : 'Authorize Google'}
+                        </a>
+                      )
+                      : (
+                        <FormGroup>
+                          <Label>Settings</Label>
+                          <Input
+                            className='settings-json'
+                            type='textarea'
+                            value={configStr}
+                            onChange={(event) => this.props.setConfigString(tab.key, event.target.value)} />
+                        </FormGroup>
+                      )}
+                  </TabPane>
+                )
+              })
+            }
           </TabContent>
         </ModalBody>
         <ModalFooter>
-          Footer
+          <Button color='primary' onClick={() => this.commitChanges()}>Save All</Button>{' '}
+          <Button color='secondary' onClick={this.props.toggle}>Cancel</Button>
         </ModalFooter>
       </Modal>
     )
   }
 
-  renderImporterExchange () {
-    return (
-      <TabPane key='importer_exchange' id='importer_exchange'>
-        <FormGroup>
-          <Label>Server URL</Label>
-          <Input type='text' />
-        </FormGroup>
-        <FormGroup>
-          <Label>Username</Label>
-          <Input type='text' />
-        </FormGroup>
-        <FormGroup>
-          <Label>Password</Label>
-          <Input type='password' />
-        </FormGroup>
-      </TabPane>
-    )
+  commitChanges () {
+    TABS.forEach((tab) => {
+      const config = this.props.config.configs.find((config) => config.key === tab.key)
+      if (config && config.configString) {
+        try {
+          this.props.setConfig(tab.key, JSON.parse(config.configString))
+        } catch (e) {}
+      }
+    })
+    this.props.saveConfigs()
+    this.props.toggle()
   }
 }
 
 const stateToProps = (state) => {
   return {
+    config: state.config
   }
 }
 
 const dispatchToProps = (dispatch) => {
   return bindActionCreators({
+    loadConfigs,
+    setConfigString,
+    setConfig,
+    saveConfigs
   }, dispatch)
 }
 
 Settings.propTypes = {
+  config: PropTypes.shape({
+    configs: PropTypes.array
+  }),
   isOpen: PropTypes.bool,
-  toggle: PropTypes.func
+  toggle: PropTypes.func,
+  loadConfigs: PropTypes.func,
+  setConfigString: PropTypes.func,
+  setConfig: PropTypes.func,
+  saveConfigs: PropTypes.func
 }
 
 export default connect(stateToProps, dispatchToProps)(Settings)

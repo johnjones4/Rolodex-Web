@@ -38,10 +38,6 @@ class ContactDetailView extends Component {
     }
   }
 
-  componentWillReceiveProps (newProps) {
-    console.log(newProps)
-  }
-
   render () {
     const contact = this.getContact()
     return (

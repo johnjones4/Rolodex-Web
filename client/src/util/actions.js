@@ -21,6 +21,7 @@ export const loadContacts = () => {
           contacts
         })
       })
+      .catch(err => console.error(err))
   }
 }
 
@@ -42,6 +43,7 @@ export const updateContact = (contact, updateProps) => {
           contact
         })
       })
+      .catch(err => console.error(err))
   }
 }
 
@@ -62,6 +64,7 @@ export const checkSyncing = () => {
           isSyncing
         })
       })
+      .catch(err => console.error(err))
   }
 }
 
@@ -77,6 +80,7 @@ export const startSyncing = () => {
           isSyncing
         })
       })
+      .catch(err => console.error(err))
   }
 }
 
@@ -97,6 +101,7 @@ export const updateNote = (note) => {
           note
         })
       })
+      .catch(err => console.error(err))
   }
 }
 
@@ -111,6 +116,7 @@ export const deleteNote = (note) => {
           note
         })
       })
+      .catch(err => console.error(err))
   }
 }
 
@@ -131,5 +137,61 @@ export const addInteraction = (interaction) => {
           interaction
         })
       })
+      .catch(err => console.error(err))
+  }
+}
+
+export const loadConfigs = () => {
+  return (dispatch, getState) => {
+    fetch('/api/config')
+      .then((res) => res.json())
+      .then((configs) => {
+        dispatch({
+          type: ACTIONS.SET_CONFIGS,
+          configs
+        })
+      })
+      .catch(err => console.error(err))
+  }
+}
+
+export const setConfig = (key, config) => {
+  return {
+    type: ACTIONS.SET_CONFIG,
+    key,
+    config
+  }
+}
+
+export const setConfigString = (key, configString) => {
+  return {
+    type: ACTIONS.SET_CONFIG_STRING,
+    key,
+    configString
+  }
+}
+
+export const saveConfigs = () => {
+  return (dispatch, getState) => {
+    Promise.all(
+      getState().config.configs
+        .filter((config) => config.key !== 'importer_googlecontacts')
+        .map((config) => {
+          const configDupe = Object.assign({}, config)
+          delete configDupe.configString
+          return fetch('/api/config' + (config.id >= 0 ? '/' + config.id : ''), {
+            method: config.id >= 0 ? 'POST' : 'PUT',
+            body: JSON.stringify(configDupe),
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            }
+          })
+        })
+    )
+      .then(() => {
+        return dispatch(loadConfigs())
+      })
+      .catch(err => console.error(err))
   }
 }

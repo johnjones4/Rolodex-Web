@@ -105,9 +105,51 @@ const sync = (state = initialSyncState, action) => {
   }
 }
 
+const initialConfigState = {
+  configs: []
+}
+
+const config = (state = initialConfigState, action) => {
+  switch (action.type) {
+    case ACTIONS.SET_CONFIGS:
+      return Object.assign({}, state, {
+        configs: action.configs
+      })
+    case ACTIONS.SET_CONFIG:
+      const newConfigs = state.configs.slice(0)
+      const configIndex = newConfigs.findIndex((config) => config.key === action.key)
+      if (configIndex >= 0) {
+        newConfigs[configIndex] = Object.assign({}, newConfigs[configIndex], {
+          config: action.config
+        })
+        return Object.assign({}, state, {
+          configs: newConfigs
+        })
+      } else {
+        return state
+      }
+    case ACTIONS.SET_CONFIG_STRING:
+      const newConfigs1 = state.configs.slice(0)
+      const configIndex1 = newConfigs1.findIndex((config) => config.key === action.key)
+      if (configIndex1 >= 0) {
+        newConfigs1[configIndex1] = Object.assign({}, newConfigs1[configIndex1], {
+          configString: action.configString
+        })
+        return Object.assign({}, state, {
+          configs: newConfigs1
+        })
+      } else {
+        return state
+      }
+    default:
+      return state
+  }
+}
+
 const rootReducer = combineReducers({
   contacts,
-  sync
+  sync,
+  config
 })
 
 export default rootReducer

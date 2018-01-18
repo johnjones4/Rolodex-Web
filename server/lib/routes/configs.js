@@ -21,7 +21,6 @@ exports.loadConfig = (req, res, next, id) => {
 
 exports.getConfigs = (req, res, next) => {
   Config
-    .query()
     .fetchAll()
     .then((configs) => {
       res.send(configs.toJSON())
