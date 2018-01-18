@@ -34,7 +34,7 @@ class ContactsSyncManager {
                 .then((dbContact) => {
                   return Promise.all([
                     Promise.all(dbContact.related('emails').map((email) => email.destroy())),
-                    dbContact.related('locations').reset(),
+                    dbContact.detach(dbContact.related('locations').map(location => location.get('id'))),
                     Promise.all(dbContact.related('phoneNumbers').map((phone) => phone.destroy())),
                     Promise.all(dbContact.related('urls').map((url) => url.destroy())),
                     Promise.all(dbContact.related('positions').map((position) => position.destroy()))
