@@ -6,6 +6,8 @@ const routes = require('./routes')
 // TODO: security
 exports.init = () => {
   const app = express()
+  
+  app.use(express.static('./build'))
   app.use(logger('tiny'))
   app.use(bodyParser.json())
   app.use(bodyParser.urlencoded({extended: true}))
