@@ -14,7 +14,7 @@ exports.init = () => {
       return knex.schema.createTable('contacts', (table) => {
         table.increments('id').primary().notNullable()
         table.string('name', 255).notNullable()
-        table.boolean('hidden').notNullable().defaultTo(false)
+        table.boolean('hidden').notNullable().defaultTo(true)
         table.integer('updateFrequency')
         table.string('googleId', 255).unique()
         table.string('exchangeId', 512).unique()
@@ -30,7 +30,7 @@ exports.init = () => {
             table.string('external_id', 512).notNullable()
             table.string('source', 255).notNullable()
             table.string('type', 255)
-            table.dateTime('date')
+            table.dateTime('date').notNullable()
             table.string('description', 255)
             table.unique(['external_id', 'source'])
             table.timestamps()

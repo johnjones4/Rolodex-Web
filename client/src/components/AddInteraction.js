@@ -15,13 +15,16 @@ import {
   Button
 } from 'reactstrap'
 import _ from 'lodash'
+import DatePicker from 'react-datepicker'
+import moment from 'moment'
+import 'react-datepicker/dist/react-datepicker.css'
 
 class AddInteraction extends Component {
   constructor (props) {
     super(props)
     this.state = {
       type: null,
-      date: new Date(),
+      date: moment(),
       description: ''
     }
   }
@@ -29,6 +32,12 @@ class AddInteraction extends Component {
   render () {
     return (
       <div>
+        <FormGroup>
+          <Label>Date</Label>
+          <DatePicker
+            selected={this.state.date}
+            onChange={(date) => this.setState({date})} />
+        </FormGroup>
         <FormGroup>
           <Label>Type</Label>
           <Input type='select' value={this.state.type} onChange={(event) => this.setState({type: (event.target.selectedIndex > 0 ? _.keys(INTERACTION_TYPES_STRINGS)[event.target.selectedIndex - 1] : null)})}>
@@ -51,7 +60,7 @@ class AddInteraction extends Component {
   saveInteraction () {
     const interaction = Object.assign({}, this.props.interaction, {
       type: this.state.type,
-      date: this.state.date,
+      date: this.state.date.toDate(),
       description: this.state.description
     })
     this.props.addInteraction(interaction)

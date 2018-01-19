@@ -2,11 +2,20 @@ const Interaction = require('../models/Interaction')
 
 exports.saveInteraction = (req, res, next) => {
   const interaction = new Interaction()
-  delete req.body.id
-  delete req.body.created_at
-  delete req.body.updated_at
-  interaction.set(req.body)
+  const contactIds = req.body.contacts.map(contact => contact.id)
+  const fields = Object.assign({}, req.body)
+  delete fields.contacts
+  delete fields.id
+  delete fields.created_at
+  delete fields.updated_at
+  interaction.set(fields)
   interaction.save()
+    .then(() => {
+      return interaction.contacts().attach(contactIds)
+    })
+    .then(() => {
+      return interaction.load(['contacts'])
+    })
     .then(() => {
       res.send(interaction.toJSON())
     })

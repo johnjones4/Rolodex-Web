@@ -57,11 +57,15 @@ const contacts = (state = initialContactsState, action) => {
         return state
       }
     case ACTIONS.ADD_INTERACTION:
-      const contactIndex2 = getContactById(state, action.interaction.contact_id)
-      if (contactIndex2 >= 0) {
+      const contactIds = action.interaction.contacts.map(contact => contact.id)
+      const indicies = state.contacts.map((c, i) => i)
+      const contactIndexes = indicies.filter((index) => contactIds.indexOf(state.contacts[index].id) >= 0)
+      if (contactIndexes.length >= 0) {
         const newContactList = state.contacts.slice(0)
-        newContactList[contactIndex1] = Object.assign({}, newContactList[contactIndex1], {
-          interactions: newContactList[contactIndex1].interactions.concat([action.interaction])
+        contactIndexes.forEach((index) => {
+          newContactList[index] = Object.assign({}, newContactList[index], {
+            interactions: newContactList[index].interactions.concat([action.interaction])
+          })
         })
         return Object.assign({}, state, {
           contacts: newContactList

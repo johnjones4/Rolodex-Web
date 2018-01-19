@@ -32,21 +32,6 @@ const Contact = module.exports = bookshelf.Model.extend({
   'notes': function () {
     const Note = require('./Note')
     return this.hasMany(Note)
-  },
-  'virtuals': {
-    'lastInteraction': function () {
-      if (this.related('interactions').length > 0) {
-        let highestInteraction = null
-        this.related('interactions').forEach((interaction) => {
-          if (!highestInteraction || interaction.get('date').getTime() > highestInteraction.get('date').getTime()) {
-            highestInteraction = interaction
-          }
-        })
-        return highestInteraction
-      } else {
-        return null
-      }
-    }
   }
 }, {
   'byProp': function (prop, value) {

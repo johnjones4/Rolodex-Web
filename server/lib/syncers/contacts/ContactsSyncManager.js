@@ -46,7 +46,10 @@ class ContactsSyncManager {
                   ]).then(() => dbContact)
                 })
             } else {
-              return new Contact({name: contact.name}).save()
+              return new Contact({
+                name: contact.name,
+                hidden: true
+              }).save()
             }
           })
           .then((_contact) => {

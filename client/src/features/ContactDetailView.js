@@ -161,10 +161,10 @@ class ContactDetailView extends Component {
     })
   }
 
-  addInteraction () {
+  addInteraction (contact) {
     this.setState({
       newInteraction: {
-        contact_id: this.props.contacts.activeContactID,
+        contacts: [contact],
         source: 'manual',
         external_id: new Date().getTime()
       },
@@ -191,7 +191,7 @@ class ContactDetailView extends Component {
             <Button color='success' onClick={() => this.addNote()} className={this.state.newNote ? 'active' : ''}>
               <FontAwesome name='sticky-note' /> Add Note
             </Button>
-            <Button color='success' onClick={() => this.addInteraction()} className={this.state.newInteraction ? 'active' : ''}>
+            <Button color='success' onClick={() => this.addInteraction(contact)} className={this.state.newInteraction ? 'active' : ''}>
               <FontAwesome name='users' /> Add Interaction
             </Button>
           </ButtonGroup>

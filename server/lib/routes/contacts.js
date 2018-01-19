@@ -56,8 +56,13 @@ exports.getContacts = (req, res, next) => {
   Contact
     .query(params)
     .orderBy('name')
-    .fetchAll({
-      withRelated: relatedFields
+    .fetchAll()
+    .then((contacts) => {
+      return Promise.all(
+        contacts.map((contact) => {
+          return contact.load(relatedFields)
+        })
+      ).then(() => contacts)
     })
     .then((contacts) => {
       res.send(contacts.toJSON())
