@@ -27,7 +27,7 @@ class Sync {
   run () {
     return this.runNext(this.contactsSyncers, 0)
       .then(() => {
-        return this.contactsSyncManager.saveUpdates()
+        return this.contactsSyncManager.saveUpdates().catch((err) => this.errors.push(err))
       })
       .then(() => {
         return this.runNext(this.interactionSyncers, 0)
