@@ -15,3 +15,5 @@ exports.interactionTypes = {
   EMAIL_SENT: 'email_sent',
   APPOINTMENT: 'appointment'
 }
+
+exports.uploadDir = process.env.UPLOAD_DIR || './files'

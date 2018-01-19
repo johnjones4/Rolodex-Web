@@ -5,6 +5,10 @@ const people = google.people('v1')
 const consts = require('../../consts')
 
 class GoogleContactsSyncer extends ContactsSyncer {
+  isReady () {
+    return super.isReady() && this.config.accessToken
+  }
+
   getOAuthClient () {
     return new OAuth2(
       consts.googleContacts.clientId,

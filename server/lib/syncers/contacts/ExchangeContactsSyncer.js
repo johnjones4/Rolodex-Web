@@ -4,6 +4,10 @@ const ContactsSyncer = require('./ContactsSyncer')
 const _ = require('lodash')
 
 class ExchangeContactsSyncer extends ContactsSyncer {
+  isReady () {
+    return super.isReady() && this.config.credentials
+  }
+
   fetch () {
     const exch = new EWSFactory().initInstance(this.config.credentials)
     const view = new ews.ItemView()

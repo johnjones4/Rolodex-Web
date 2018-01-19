@@ -34,5 +34,7 @@ exports.init = () => {
   app.get('/api/sync', routes.sync.checkSync)
   app.post('/api/sync', routes.sync.startSync)
 
+  app.post('/api/upload', routes.upload.uploadFile)
+
   return app
 }

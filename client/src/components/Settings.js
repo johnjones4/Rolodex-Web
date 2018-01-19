@@ -15,13 +15,16 @@ import {
   FormGroup,
   Input,
   Label,
-  Button
+  Button,
+  InputGroup,
+  InputGroupAddon
 } from 'reactstrap'
 import {
   loadConfigs,
   setConfigString,
   setConfig,
-  saveConfigs
+  saveConfigs,
+  uploadLinkedInFile
 } from '../util/actions'
 import './Settings.scss'
 
@@ -41,6 +44,10 @@ const TABS = [
   {
     key: 'interactionsyncer_imap',
     value: 'IMAP Mail'
+  },
+  {
+    key: 'importer_linkedin',
+    value: 'LinkedIn Connections'
   }
 ]
 
@@ -48,7 +55,8 @@ class Settings extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      activeTab: TABS[0].key
+      activeTab: TABS[0].key,
+      selectedLinkedInFile: null
     }
   }
 
@@ -81,25 +89,9 @@ class Settings extends Component {
             {
               TABS.map((tab) => {
                 const config = this.props.config.configs.find((config) => config.key === tab.key) || {config: {}, key: tab.key}
-                const configStr = config ? (config.configString || JSON.stringify(config.config, null, '  ')) : ''
                 return config && (
                   <TabPane key={tab.key} tabId={tab.key}>
-                    {tab.key === 'importer_googlecontacts'
-                      ? (
-                        <a href='/auth/googlecontacts' target='_blank' className='btn btn-success'>
-                          {config && config.config && config.config.accessToken ? 'Reauthorize Google' : 'Authorize Google'}
-                        </a>
-                      )
-                      : (
-                        <FormGroup>
-                          <Label>Settings</Label>
-                          <Input
-                            className='settings-json'
-                            type='textarea'
-                            value={configStr}
-                            onChange={(event) => this.props.setConfigString(tab.key, event.target.value)} />
-                        </FormGroup>
-                      )}
+                    {this.renderSettingsTab(config)}
                   </TabPane>
                 )
               })
@@ -112,6 +104,41 @@ class Settings extends Component {
         </ModalFooter>
       </Modal>
     )
+  }
+
+  renderSettingsTab (config) {
+    switch (config.key) {
+      case 'importer_linkedin':
+        const handleLinkedInFileUpload = () => {
+          this.props.uploadLinkedInFile(this.state.selectedLinkedInFile)
+          this.setState({selectedLinkedInFile: null})
+        }
+        return (
+          <FormGroup>
+            <Label>Connections CSV</Label>
+            <InputGroup>
+              <Input type='file' onChange={(event) => this.setState({selectedLinkedInFile: event.target.files[0]})} />
+              <InputGroupAddon>
+                <Button color='success' disabled={!this.state.selectedLinkedInFile} onClick={() => handleLinkedInFileUpload()}>Upload</Button>
+              </InputGroupAddon>
+            </InputGroup>
+          </FormGroup>
+        )
+      case 'importer_googlecontacts':
+        return (<a href='/auth/googlecontacts' target='_blank' className='btn btn-success'>
+          {config && config.config && config.config.accessToken ? 'Reauthorize Google' : 'Authorize Google'}
+        </a>)
+      default:
+        const configStr = config ? (config.configString || JSON.stringify(config.config, null, '  ')) : ''
+        return (<FormGroup>
+          <Label>Settings</Label>
+          <Input
+            className='settings-json'
+            type='textarea'
+            value={configStr}
+            onChange={(event) => this.props.setConfigString(config.key, event.target.value)} />
+        </FormGroup>)
+    }
   }
 
   commitChanges () {
@@ -139,7 +166,8 @@ const dispatchToProps = (dispatch) => {
     loadConfigs,
     setConfigString,
     setConfig,
-    saveConfigs
+    saveConfigs,
+    uploadLinkedInFile
   }, dispatch)
 }
 
@@ -152,7 +180,8 @@ Settings.propTypes = {
   loadConfigs: PropTypes.func,
   setConfigString: PropTypes.func,
   setConfig: PropTypes.func,
-  saveConfigs: PropTypes.func
+  saveConfigs: PropTypes.func,
+  uploadLinkedInFile: PropTypes.func
 }
 
 export default connect(stateToProps, dispatchToProps)(Settings)

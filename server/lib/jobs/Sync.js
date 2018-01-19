@@ -1,6 +1,7 @@
 const {
   GoogleContactsSyncer,
-  ExchangeContactsSyncer
+  ExchangeContactsSyncer,
+  LinkedInConnectionsSyncer
 } = require('../syncers/contacts')
 const {
   ExchangeInteractionsSyncer,
@@ -13,7 +14,8 @@ class Sync {
     this.contactsSyncManager = new ContactsSyncManager()
     this.contactsSyncers = [
       new GoogleContactsSyncer(this.contactsSyncManager),
-      new ExchangeContactsSyncer(this.contactsSyncManager)
+      new ExchangeContactsSyncer(this.contactsSyncManager),
+      new LinkedInConnectionsSyncer(this.contactsSyncManager)
     ]
     this.interactionSyncers = [
       new ExchangeInteractionsSyncer(),

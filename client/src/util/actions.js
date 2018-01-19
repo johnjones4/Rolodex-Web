@@ -1,4 +1,4 @@
-/* global fetch */
+/* global fetch FormData */
 import {ACTIONS} from './consts'
 
 export const toggleShowHidden = () => {
@@ -175,7 +175,9 @@ export const saveConfigs = () => {
   return (dispatch, getState) => {
     Promise.all(
       getState().config.configs
-        .filter((config) => config.key !== 'importer_googlecontacts')
+        .filter((config) => {
+          return ['importer_googlecontacts'].indexOf(config.key) < 0
+        })
         .map((config) => {
           const configDupe = Object.assign({}, config)
           delete configDupe.configString
@@ -193,5 +195,26 @@ export const saveConfigs = () => {
         return dispatch(loadConfigs())
       })
       .catch(err => console.error(err))
+  }
+}
+
+export const uploadLinkedInFile = (file) => {
+  return (dispatch, getState) => {
+    const formData = new FormData()
+    formData.append('file', file)
+    fetch('/api/upload', {
+      method: 'POST',
+      body: formData
+    })
+      .then((res) => res.json())
+      .then(({file}) => {
+        const linkedInConfig = getState().config.configs.find((config) => config.key === 'importer_linkedin') || {key: 'importer_linkedin', config: {}}
+        linkedInConfig.config.file = file
+        dispatch({
+          type: ACTIONS.SET_CONFIG,
+          key: 'importer_linkedin',
+          config: linkedInConfig.config
+        })
+      })
   }
 }
