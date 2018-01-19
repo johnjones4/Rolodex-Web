@@ -17,7 +17,14 @@ const Phone = module.exports = bookshelf.Model.extend({
           'phone': phone
         })
       })
-      .fetch()
+      .fetch({withRelated: ['contact']})
+      .then((object) => {
+        if (object) {
+          return object.related('contact')
+        } else {
+          return null
+        }
+      })
   },
   getOrCreate: function (phone, contact) {
     return Phone

@@ -1,3 +1,3 @@
-['GoogleContactsSyncer', 'ExchangeContactsSyncer', 'LinkedInConnectionsSyncer'].forEach((klass) => {
+['GoogleContactsSyncer', 'ExchangeContactsSyncer', 'LinkedInConnectionsSyncer', 'GravatarSyncer'].forEach((klass) => {
   exports[klass] = require('./' + klass)
 })

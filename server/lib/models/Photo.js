@@ -1,8 +1,8 @@
 const knex = require('../database').knex
 const bookshelf = require('bookshelf')(knex)
 
-const URL = module.exports = bookshelf.Model.extend({
-  'tableName': 'urls',
+const Photo = module.exports = bookshelf.Model.extend({
+  'tableName': 'photos',
   'hasTimestamps': true,
   'contact': function () {
     const Contact = require('./Contact')
@@ -10,7 +10,7 @@ const URL = module.exports = bookshelf.Model.extend({
   }
 }, {
   findContact: function (url) {
-    return URL
+    return Photo
       .forge()
       .query((qb) => {
         qb.where({
@@ -27,7 +27,7 @@ const URL = module.exports = bookshelf.Model.extend({
       })
   },
   getOrCreate: function (url, contact) {
-    return URL
+    return Photo
       .forge()
       .query((qb) => {
         qb.where({
@@ -36,17 +36,17 @@ const URL = module.exports = bookshelf.Model.extend({
         })
       })
       .fetch()
-      .then((urlObj) => {
-        if (urlObj) {
-          return urlObj
+      .then((obj) => {
+        if (obj) {
+          return obj
         } else {
-          const newURL = new URL({
+          const newObj = new Photo({
             'url': url,
             'contact_id': contact.get('id')
           })
-          return newURL
+          return newObj
             .save()
-            .then(() => newURL)
+            .then(() => newObj)
         }
       })
   }

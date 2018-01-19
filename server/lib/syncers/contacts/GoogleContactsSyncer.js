@@ -101,6 +101,9 @@ class GoogleContactsSyncer extends ContactsSyncer {
             if (contact.names && contact.names.length > 0) {
               object.name = contact.names[0].displayName
             }
+            if (contact.photos && contact.photos.length > 0) {
+              object.photos = contact.photos.map((photo) => photo.url).filter((value) => !(!value) && value.trim().length > 0)
+            }
             if (contact.addresses && contact.addresses.length > 0) {
               object.locations = contact.addresses.map((address) => address.formattedValue).filter((value) => !(!value) && value.trim().length > 0)
             }

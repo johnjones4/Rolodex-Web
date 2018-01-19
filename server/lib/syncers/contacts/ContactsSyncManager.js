@@ -6,11 +6,12 @@ const URL = require('../../models/URL')
 const Position = require('../../models/Position')
 const Location = require('../../models/Location')
 const Organization = require('../../models/Organization')
+const Photo = require('../../models/Photo')
 const _ = require('lodash')
 const arrayUniq = require('array-uniq')
 
 const SYNC_CONTACTS = ['googleId', 'exchangeId', 'emails', 'name']
-const UNIQUE_PROPS = ['emails', 'phoneNumbers', 'urls', 'locations']
+const UNIQUE_PROPS = ['emails', 'phoneNumbers', 'urls', 'locations', 'photos']
 
 class ContactsSyncManager {
   constructor () {
@@ -33,7 +34,8 @@ class ContactsSyncManager {
                   'locations',
                   'phoneNumbers',
                   'urls',
-                  'positions'
+                  'positions',
+                  'photos'
                 ]
               })
                 .then((dbContact) => {
@@ -42,6 +44,7 @@ class ContactsSyncManager {
                     dbContact.locations().detach(dbContact.related('locations').map(location => location.get('id'))),
                     Promise.all(dbContact.related('phoneNumbers').map((phone) => phone.destroy())),
                     Promise.all(dbContact.related('urls').map((url) => url.destroy())),
+                    Promise.all(dbContact.related('photos').map((photo) => photo.destroy())),
                     Promise.all(dbContact.related('positions').map((position) => position.destroy()))
                   ]).then(() => dbContact)
                 })
@@ -120,6 +123,8 @@ class ContactsSyncManager {
                     return updateArrayProp(Phone, 'phone', 0)
                   case 'urls':
                     return updateArrayProp(URL, 'url', 0)
+                  case 'photos':
+                    return updateArrayProp(Photo, 'url', 0)
                   case 'positions':
                     return updateNextPosition(0)
                   default:

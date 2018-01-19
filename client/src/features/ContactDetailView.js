@@ -62,6 +62,7 @@ class ContactDetailView extends Component {
   renderHeading (contact) {
     return (
       <div className='contact-detail-view-heading'>
+        { contact.photos && contact.photos.length > 0 && (<img src={contact.photos[0].url} alt={contact.name} className='pull-left profile-photo' />) }
         <h1>
           {contact.name}
         </h1>

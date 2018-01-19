@@ -151,6 +151,19 @@ exports.init = () => {
       })
     })
     .then(() => {
+      return knex.schema.hasTable('photos').then((exists) => {
+        if (!exists) {
+          return knex.schema.createTable('photos', (table) => {
+            table.increments('id').primary().notNullable()
+            table.string('url', 255).notNullable()
+            table.integer('contact_id').notNullable().references('id').inTable('contacts')
+            table.unique(['contact_id', 'url'])
+            table.timestamps()
+          })
+        }
+      })
+    })
+    .then(() => {
       return knex.schema.hasTable('config').then((exists) => {
         if (!exists) {
           return knex.schema.createTable('config', (table) => {

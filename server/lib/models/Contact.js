@@ -17,6 +17,10 @@ const Contact = module.exports = bookshelf.Model.extend({
     const URL = require('./URL')
     return this.hasMany(URL)
   },
+  'photos': function () {
+    const Photo = require('./Photo')
+    return this.hasMany(Photo)
+  },
   'phoneNumbers': function () {
     const Phone = require('./Phone')
     return this.hasMany(Phone)

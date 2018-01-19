@@ -9,7 +9,8 @@ const relatedFields = [
   'phoneNumbers',
   'positions',
   'positions.organization',
-  'notes'
+  'notes',
+  'photos'
 ]
 
 const deleteProps = [
