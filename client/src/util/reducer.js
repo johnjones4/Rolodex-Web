@@ -95,14 +95,16 @@ const contacts = (state = initialContactsState, action) => {
 }
 
 const initialSyncState = {
-  isSyncing: false
+  isSyncing: false,
+  errors: []
 }
 
 const sync = (state = initialSyncState, action) => {
   switch (action.type) {
     case ACTIONS.SET_ISSYNCING:
       return Object.assign({}, state, {
-        isSyncing: action.isSyncing
+        isSyncing: action.isSyncing,
+        errors: action.errors
       })
     default:
       return state

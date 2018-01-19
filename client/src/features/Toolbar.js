@@ -5,7 +5,8 @@ import './Toolbar.scss'
 import FontAwesome from 'react-fontawesome'
 import {
   Button,
-  ButtonGroup
+  ButtonGroup,
+  Alert
 } from 'reactstrap'
 import PropTypes from 'prop-types'
 import {
@@ -40,19 +41,28 @@ class Toolbar extends Component {
 
   render () {
     return (
-      <div className='toolbar'>
-        <ButtonGroup vertical>
-          <Button color='secondary' onClick={() => this.props.toggleShowHidden()} title='Show/Hide tracked contacts'>
-            <FontAwesome name={this.props.contacts.showHidden ? 'star-o' : 'star'} />
-          </Button>
-          <Button color='secondary' title='Settings' onClick={() => this.setState({settingsOpen: true})}>
-            <FontAwesome name='gear' />
-          </Button>
-          <Button color='secondary' title='Sync data' onClick={() => this.props.startSyncing()}>
-            <FontAwesome name='refresh' className={this.props.sync.isSyncing ? 'sync-running' : ''} />
-          </Button>
-        </ButtonGroup>
+      <div>
+        <div className='toolbar'>
+          <ButtonGroup vertical>
+            <Button color='secondary' onClick={() => this.props.toggleShowHidden()} title='Show/Hide tracked contacts'>
+              <FontAwesome name={this.props.contacts.showHidden ? 'star-o' : 'star'} />
+            </Button>
+            <Button color='secondary' title='Settings' onClick={() => this.setState({settingsOpen: true})}>
+              <FontAwesome name='gear' />
+            </Button>
+            <Button color='secondary' title='Sync data' onClick={() => this.props.startSyncing()}>
+              <FontAwesome name='refresh' className={this.props.sync.isSyncing ? 'sync-running' : ''} />
+            </Button>
+          </ButtonGroup>
+        </div>
         <Settings isOpen={this.state.settingsOpen} toggle={() => this.setState({settingsOpen: !this.state.settingsOpen})} />
+        { this.props.sync.errors && this.props.sync.errors.length && (
+          <Alert color='danger' className='sync-alert'>
+            {
+              this.props.sync.errors.map((error, i) => (<p key={i}>{error}</p>))
+            }
+          </Alert>
+        ) }
       </div>
     )
   }
@@ -79,7 +89,8 @@ Toolbar.propTypes = {
     showHidden: PropTypes.bool
   }),
   sync: PropTypes.shape({
-    isSyncing: PropTypes.bool
+    isSyncing: PropTypes.bool,
+    errors: PropTypes.array
   }),
   checkSyncing: PropTypes.func,
   startSyncing: PropTypes.func,

@@ -21,6 +21,7 @@ class Sync {
       new ExchangeInteractionsSyncer(),
       new IMAPInteractionsSyncer()
     ]
+    this.errors = []
   }
 
   run () {
@@ -39,7 +40,7 @@ class Sync {
       return syncer.loadConfig()
         .then(() => {
           if (syncer.isReady()) {
-            return syncer.run()
+            return syncer.run().catch((err) => this.errors.push(err))
           }
         })
         .then(() => {

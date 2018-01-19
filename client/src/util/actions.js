@@ -58,10 +58,11 @@ export const checkSyncing = () => {
   return (dispatch, getState) => {
     fetch('/api/sync')
       .then((res) => res.json())
-      .then(({isSyncing}) => {
+      .then(({isSyncing, errors}) => {
         dispatch({
           type: ACTIONS.SET_ISSYNCING,
-          isSyncing
+          isSyncing,
+          errors
         })
       })
       .catch(err => console.error(err))
@@ -74,10 +75,11 @@ export const startSyncing = () => {
       method: 'POST'
     })
       .then((res) => res.json())
-      .then(({isSyncing}) => {
+      .then(({isSyncing, errors}) => {
         dispatch({
           type: ACTIONS.SET_ISSYNCING,
-          isSyncing
+          isSyncing,
+          errors
         })
       })
       .catch(err => console.error(err))

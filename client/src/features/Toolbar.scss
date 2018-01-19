@@ -28,3 +28,12 @@
     animation-timing-function: linear;
   }
 }
+
+.sync-alert {
+  position: fixed;
+  bottom: 1em;
+  left: 0;
+  right: 0;
+  max-width: 800px;
+  margin: auto;
+}
