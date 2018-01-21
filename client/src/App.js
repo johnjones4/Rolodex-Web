@@ -8,6 +8,8 @@ import ContactList from './features/ContactList'
 import ContactDetailView from './features/ContactDetailView'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
+import Login from './Login'
+import PropTypes from 'prop-types'
 
 class App extends Component {
   constructor (props) {
@@ -21,25 +23,36 @@ class App extends Component {
   }
 
   render () {
-    return (
-      <div className='app-wrapper'>
-        <Toolbar />
-        <ContactList />
-        <ContactDetailView />
-      </div>
-    )
+    if (this.props.user.token) {
+      return (
+        <div className='app-wrapper'>
+          <Toolbar />
+          <ContactList />
+          <ContactDetailView />
+        </div>
+      )
+    } else {
+      return (<Login />)
+    }
   }
 }
 
 const stateToProps = (state) => {
   return {
-    contacts: state.contacts
+    contacts: state.contacts,
+    user: state.user
   }
 }
 
 const dispatchToProps = (dispatch) => {
   return bindActionCreators({
   }, dispatch)
+}
+
+App.propTypes = {
+  user: PropTypes.shape({
+    token: PropTypes.string
+  })
 }
 
 export default connect(stateToProps, dispatchToProps)(App)

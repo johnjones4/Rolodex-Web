@@ -159,10 +159,26 @@ const config = (state = initialConfigState, action) => {
   }
 }
 
+const initialUserState = {
+  token: null
+}
+
+const user = (state = initialUserState, action) => {
+  switch (action.type) {
+    case ACTIONS.SET_USER_TOKEN:
+      return Object.assign({}, state, {
+        token: action.token
+      })
+    default:
+      return state
+  }
+}
+
 const rootReducer = combineReducers({
   contacts,
   sync,
-  config
+  config,
+  user
 })
 
 export default rootReducer

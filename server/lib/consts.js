@@ -17,3 +17,10 @@ exports.interactionTypes = {
 }
 
 exports.uploadDir = process.env.UPLOAD_DIR || './files'
+
+exports.jwtSecret = process.env.JWT_SECRET
+
+exports.user = {
+  username: process.env.LOGIN_USERNAME,
+  password: process.env.LOGIN_PASSWORD
+}

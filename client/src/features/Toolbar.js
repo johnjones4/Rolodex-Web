@@ -13,7 +13,8 @@ import {
   toggleShowHidden,
   checkSyncing,
   startSyncing,
-  loadContacts
+  loadContacts,
+  logout
 } from '../util/actions'
 import Settings from '../components/Settings'
 
@@ -53,6 +54,9 @@ class Toolbar extends Component {
             <Button color='secondary' title='Sync data' onClick={() => this.props.startSyncing()}>
               <FontAwesome name='refresh' className={this.props.sync.isSyncing ? 'sync-running' : ''} />
             </Button>
+            <Button color='warning' title='Log Out' onClick={() => this.props.logout()}>
+              <FontAwesome name='sign-out' />
+            </Button>
           </ButtonGroup>
         </div>
         <Settings isOpen={this.state.settingsOpen} toggle={() => this.setState({settingsOpen: !this.state.settingsOpen})} />
@@ -80,7 +84,8 @@ const dispatchToProps = (dispatch) => {
     toggleShowHidden,
     checkSyncing,
     startSyncing,
-    loadContacts
+    loadContacts,
+    logout
   }, dispatch)
 }
 
@@ -95,7 +100,8 @@ Toolbar.propTypes = {
   checkSyncing: PropTypes.func,
   startSyncing: PropTypes.func,
   toggleShowHidden: PropTypes.func,
-  loadContacts: PropTypes.func
+  loadContacts: PropTypes.func,
+  logout: PropTypes.func
 }
 
 export default connect(stateToProps, dispatchToProps)(Toolbar)

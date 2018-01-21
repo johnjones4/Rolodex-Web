@@ -2,39 +2,46 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const logger = require('morgan')
 const routes = require('./routes')
+const {
+  jwtSecret
+} = require('./consts')
+const jwt = require('express-jwt')
 
-// TODO: security
+const authenticate = jwt({secret: jwtSecret})
+
 exports.init = () => {
   const app = express()
-  
-  app.use(express.static('./build'))
+
   app.use(logger('tiny'))
   app.use(bodyParser.json())
   app.use(bodyParser.urlencoded({extended: true}))
+  app.use(express.static('./build'))
 
-  app.get('/auth/googlecontacts', routes.authorizors.startGoogleContacts)
-  app.get('/auth/googlecontacts/callback', routes.authorizors.finishGoogleContacts)
+  app.post('/api/login', routes.login.login)
+
+  app.get('/auth/googlecontacts', authenticate, routes.authorizors.startGoogleContacts)
+  app.get('/auth/googlecontacts/callback', authenticate, routes.authorizors.finishGoogleContacts)
 
   app.param('contact', routes.contacts.loadContact)
-  app.get('/api/contact', routes.contacts.getContacts)
-  app.post('/api/contact/:contact', routes.contacts.saveContact)
+  app.get('/api/contact', authenticate, routes.contacts.getContacts)
+  app.post('/api/contact/:contact', authenticate, routes.contacts.saveContact)
 
-  app.param('note', routes.notes.loadNote)
-  app.put('/api/note', routes.notes.saveNote)
-  app.post('/api/note/:note', routes.notes.saveNote)
-  app.delete('/api/note/:note', routes.notes.deleteNote)
+  app.param('note', authenticate, routes.notes.loadNote)
+  app.put('/api/note', authenticate, routes.notes.saveNote)
+  app.post('/api/note/:note', authenticate, routes.notes.saveNote)
+  app.delete('/api/note/:note', authenticate, routes.notes.deleteNote)
 
-  app.put('/api/interaction', routes.interactions.saveInteraction)
+  app.put('/api/interaction', authenticate, routes.interactions.saveInteraction)
 
-  app.param('config', routes.configs.loadConfig)
-  app.get('/api/config', routes.configs.getConfigs)
-  app.put('/api/config', routes.configs.saveConfig)
-  app.post('/api/config/:config', routes.configs.saveConfig)
+  app.param('config', authenticate, routes.configs.loadConfig)
+  app.get('/api/config', authenticate, routes.configs.getConfigs)
+  app.put('/api/config', authenticate, routes.configs.saveConfig)
+  app.post('/api/config/:config', authenticate, routes.configs.saveConfig)
 
-  app.get('/api/sync', routes.sync.checkSync)
-  app.post('/api/sync', routes.sync.startSync)
+  app.get('/api/sync', authenticate, routes.sync.checkSync)
+  app.post('/api/sync', authenticate, routes.sync.startSync)
 
-  app.post('/api/upload', routes.upload.uploadFile)
+  app.post('/api/upload', authenticate, routes.upload.uploadFile)
 
   return app
 }

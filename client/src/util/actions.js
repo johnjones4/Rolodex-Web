@@ -1,6 +1,37 @@
 /* global fetch FormData */
 import {ACTIONS} from './consts'
 
+export const login = (username, password) => {
+  return (dispatch, getState) => {
+    fetch('/api/login', {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      method: 'POST',
+      body: JSON.stringify({
+        username,
+        password
+      })
+    })
+      .then((res) => res.json())
+      .then(({token}) => {
+        dispatch({
+          type: ACTIONS.SET_USER_TOKEN,
+          token
+        })
+      })
+      .catch(err => console.error(err))
+  }
+}
+
+export const logout = () => {
+  return {
+    type: ACTIONS.SET_USER_TOKEN,
+    token: null
+  }
+}
+
 export const toggleShowHidden = () => {
   return (dispatch, getState) => {
     dispatch({
@@ -13,7 +44,13 @@ export const toggleShowHidden = () => {
 
 export const loadContacts = () => {
   return (dispatch, getState) => {
-    fetch('/api/contact' + (getState().contacts.showHidden ? '?showHidden=1' : ''))
+    fetch('/api/contact' + (getState().contacts.showHidden ? '?showHidden=1' : ''), {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + getState().user.token
+      }
+    })
       .then((res) => res.json())
       .then((contacts) => {
         dispatch({
@@ -32,8 +69,11 @@ export const updateContact = (contact, updateProps) => {
       method: 'POST',
       body: JSON.stringify(newContact),
       headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + getState().user.token
+        }
       }
     })
       .then((res) => res.json())
@@ -56,7 +96,13 @@ export const setActiveContact = (contact) => {
 
 export const checkSyncing = () => {
   return (dispatch, getState) => {
-    fetch('/api/sync')
+    fetch('/api/sync', {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + getState().user.token
+      }
+    })
       .then((res) => res.json())
       .then(({isSyncing, errors}) => {
         dispatch({
@@ -72,7 +118,12 @@ export const checkSyncing = () => {
 export const startSyncing = () => {
   return (dispatch, getState) => {
     fetch('/api/sync', {
-      method: 'POST'
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + getState().user.token
+      }
     })
       .then((res) => res.json())
       .then(({isSyncing, errors}) => {
@@ -93,7 +144,8 @@ export const updateNote = (note) => {
       body: JSON.stringify(note),
       headers: {
         'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + getState().user.token
       }
     })
       .then((res) => res.json())
@@ -110,7 +162,12 @@ export const updateNote = (note) => {
 export const deleteNote = (note) => {
   return (dispatch, getState) => {
     fetch('/api/note' + (note.id >= 0 ? '/' + note.id : ''), {
-      method: 'DELETE'
+      method: 'DELETE',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + getState().user.token
+      }
     })
       .then(() => {
         dispatch({
@@ -129,7 +186,8 @@ export const addInteraction = (interaction) => {
       body: JSON.stringify(interaction),
       headers: {
         'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + getState().user.token
       }
     })
       .then((res) => res.json())
@@ -145,7 +203,13 @@ export const addInteraction = (interaction) => {
 
 export const loadConfigs = () => {
   return (dispatch, getState) => {
-    fetch('/api/config')
+    fetch('/api/config', {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + getState().user.token
+      }
+    })
       .then((res) => res.json())
       .then((configs) => {
         dispatch({
@@ -188,7 +252,8 @@ export const saveConfigs = () => {
             body: JSON.stringify(configDupe),
             headers: {
               'Accept': 'application/json',
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + getState().user.token
             }
           })
         })
@@ -206,7 +271,12 @@ export const uploadLinkedInFile = (file) => {
     formData.append('file', file)
     fetch('/api/upload', {
       method: 'POST',
-      body: formData
+      body: formData,
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + getState().user.token
+      }
     })
       .then((res) => res.json())
       .then(({file}) => {
