@@ -62,7 +62,7 @@ class ContactDetailView extends Component {
 
   renderHeading (contact) {
     return (
-      <div className='contact-detail-view-heading'>
+      <div className='contact-detail-view-heading clearfix'>
         { contact.photos && contact.photos.length > 0 && (<img src={contact.photos[0].url} alt={contact.name} className='pull-left profile-photo' />) }
         <h1>
           {contact.name}
@@ -89,7 +89,7 @@ class ContactDetailView extends Component {
 
   renderPreferences (contact) {
     return (
-      <div className='contact-detail-view-preferences'>
+      <div className='contact-detail-view-preferences clearfix'>
         <h3>Preferences</h3>
         <FormGroup row>
           <Label sm={4}>Outreach Frequency</Label>
@@ -109,7 +109,7 @@ class ContactDetailView extends Component {
 
   renderDetails (contact) {
     return (
-      <div className='contact-detail-view-details'>
+      <div className='contact-detail-view-details clearfix'>
         <h3>Contact Information</h3>
         <Row>
           <Col>
@@ -186,7 +186,7 @@ class ContactDetailView extends Component {
   renderTimeline (contact) {
     const events = this.generateTimeline(contact)
     return (
-      <div className='contact-detail-view-timeline'>
+      <div className='contact-detail-view-timeline clearfix'>
         <h3>Timeline</h3>
         <div className='text-center'>
           <ButtonGroup>
