@@ -22,4 +22,11 @@
     width: 100px;
     height: auto;
   }
+
+  .click-to-edit {
+    cursor: pointer;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }

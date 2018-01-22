@@ -26,6 +26,7 @@ import {
 import FontAwesome from 'react-fontawesome'
 import AddInteraction from '../components/AddInteraction'
 import NoteEditor from '../components/NoteEditor'
+import marked from 'marked'
 
 class ContactDetailView extends Component {
   constructor (props) {
@@ -240,9 +241,8 @@ class ContactDetailView extends Component {
         if (this.state.editingNote !== event.note.id) {
           return (
             <ListGroupItemText onClick={() => this.editNote(event.note)}>
-              {event.note.note}
-              <br />
-              <small>Click to edit</small>
+              <div dangerouslySetInnerHTML={{__html: marked(event.note.note)}} />
+              <small className='click-to-edit'>Click to edit</small>
             </ListGroupItemText>
           )
         } else {
