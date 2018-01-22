@@ -92,6 +92,12 @@ export const setActiveContact = (contact) => {
   }
 }
 
+export const clearSyncErrors = () => {
+  return {
+    type: ACTIONS.CLEAR_SYNC_ERRORS
+  }
+}
+
 export const checkSyncing = () => {
   return (dispatch, getState) => {
     fetch('/api/sync', {

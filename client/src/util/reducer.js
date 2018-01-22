@@ -106,6 +106,10 @@ const sync = (state = initialSyncState, action) => {
         isSyncing: action.isSyncing,
         errors: action.errors
       })
+    case ACTIONS.CLEAR_SYNC_ERRORS:
+      return Object.assign({}, state, {
+        errors: []
+      })
     default:
       return state
   }

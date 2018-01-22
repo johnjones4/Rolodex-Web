@@ -14,7 +14,8 @@ import {
   checkSyncing,
   startSyncing,
   loadContacts,
-  logout
+  logout,
+  clearSyncErrors
 } from '../util/actions'
 import {
   MOBILE_SIZE
@@ -69,13 +70,9 @@ class Toolbar extends Component {
           </ButtonGroup>
         </div>
         <Settings isOpen={this.state.settingsOpen} toggle={() => this.setState({settingsOpen: !this.state.settingsOpen})} />
-        { this.props.sync.errors && this.props.sync.errors.length ? (
-          <Alert color='danger' className='sync-alert'>
-            {
-              this.props.sync.errors.map((error, i) => (<p key={i}>{error}</p>))
-            }
-          </Alert>
-        ) : null }
+        <Alert isOpen={this.props.sync.errors && this.props.sync.errors.length > 0} color='danger' className='sync-alert' toggle={() => this.props.clearSyncErrors()}>
+          { this.props.sync.errors.map((error, i) => (<p key={i}>{error}</p>)) }
+        </Alert>
       </div>
     )
   }
@@ -94,7 +91,8 @@ const dispatchToProps = (dispatch) => {
     checkSyncing,
     startSyncing,
     loadContacts,
-    logout
+    logout,
+    clearSyncErrors
   }, dispatch)
 }
 
@@ -110,7 +108,8 @@ Toolbar.propTypes = {
   startSyncing: PropTypes.func,
   toggleShowHidden: PropTypes.func,
   loadContacts: PropTypes.func,
-  logout: PropTypes.func
+  logout: PropTypes.func,
+  clearSyncErrors: PropTypes.func
 }
 
 export default connect(stateToProps, dispatchToProps)(Toolbar)
