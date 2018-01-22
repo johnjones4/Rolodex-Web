@@ -8,8 +8,8 @@ export const nextInteraction = (contact) => {
   } else {
     const interactions = contact.interactions.slice(0)
     interactions.sort((a, b) => {
-      const aDate = a.date.getTime ? a.date.getTime() : Date.parse(a.date)
-      const bDate = b.date.getTime ? b.date.getTime() : Date.parse(b.date)
+      const aDate = a.date.getTime ? a.date.getTime() : (isNaN(a.date) ? Date.parse(a.date) : a.date)
+      const bDate = b.date.getTime ? b.date.getTime() : (isNaN(b.date) ? Date.parse(b.date) : b.date)
       return aDate - bDate
     })
     const lastInteraction = interactions[interactions.length - 1]
