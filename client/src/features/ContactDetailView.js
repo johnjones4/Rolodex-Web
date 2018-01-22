@@ -21,7 +21,8 @@ import {
   UPDATE_FREQUENCIES
 } from '../util/consts'
 import {
-  updateContact
+  updateContact,
+  setActiveContact
 } from '../util/actions'
 import FontAwesome from 'react-fontawesome'
 import AddInteraction from '../components/AddInteraction'
@@ -42,10 +43,13 @@ class ContactDetailView extends Component {
   render () {
     const contact = this.getContact()
     return (
-      <div className='contact-detail-view'>
+      <div className={['contact-detail-view', contact ? 'has-contact' : ''].join(' ')}>
         {
           contact && (
             <div className='contact-detail-view-content'>
+              <p className='clearfix'>
+                <Button color='secondary' size='sm' className='d-xl-none d-lg-none' onClick={() => this.props.setActiveContact(null)}>Done</Button>
+              </p>
               { this.renderHeading(contact) }
               <hr />
               { this.renderPreferences(contact) }
@@ -112,7 +116,7 @@ class ContactDetailView extends Component {
       <div className='contact-detail-view-details clearfix'>
         <h3>Contact Information</h3>
         <Row>
-          <Col>
+          <Col xl='6' lg='12' md='6' sm='6' xs='12'>
             <h3>Emails</h3>
             <ul className='contact-detail-view-list'>
               {
@@ -120,7 +124,7 @@ class ContactDetailView extends Component {
               }
             </ul>
           </Col>
-          <Col>
+          <Col xl='6' lg='12' md='6' sm='6' xs='12'>
             <h3>Phone Numbers</h3>
             <ul className='contact-detail-view-list'>
               {
@@ -131,7 +135,7 @@ class ContactDetailView extends Component {
         </Row>
         <br />
         <Row>
-          <Col>
+          <Col xl='6' lg='12' md='6' sm='6' xs='12'>
             <h3>URLs</h3>
             <ul className='contact-detail-view-list'>
               {
@@ -139,7 +143,7 @@ class ContactDetailView extends Component {
               }
             </ul>
           </Col>
-          <Col>
+          <Col xl='6' lg='12' md='6' sm='6' xs='12'>
             <h3>Locations</h3>
             <ul className='contact-detail-view-list'>
               {
@@ -294,7 +298,8 @@ const stateToProps = (state) => {
 
 const dispatchToProps = (dispatch) => {
   return bindActionCreators({
-    updateContact
+    updateContact,
+    setActiveContact
   }, dispatch)
 }
 
@@ -303,7 +308,8 @@ ContactDetailView.propTypes = {
     contacts: PropTypes.array,
     activeContactID: PropTypes.number
   }),
-  updateContact: PropTypes.func
+  updateContact: PropTypes.func,
+  setActiveContact: PropTypes.func
 }
 
 export default connect(stateToProps, dispatchToProps)(ContactDetailView)

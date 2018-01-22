@@ -16,14 +16,23 @@ import {
   loadContacts,
   logout
 } from '../util/actions'
+import {
+  MOBILE_SIZE
+} from '../util/consts'
 import Settings from '../components/Settings'
 
 class Toolbar extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      settingsOpen: false
+      settingsOpen: false,
+      toolbarVertical: window.innerWidth >= MOBILE_SIZE
     }
+    window.addEventListener('resize', () => {
+      this.setState({
+        toolbarVertical: window.innerWidth >= MOBILE_SIZE
+      })
+    })
   }
 
   componentWillReceiveProps (nextProps) {
@@ -44,7 +53,7 @@ class Toolbar extends Component {
     return (
       <div>
         <div className='toolbar'>
-          <ButtonGroup vertical>
+          <ButtonGroup vertical={this.state.toolbarVertical}>
             <Button color='secondary' onClick={() => this.props.toggleShowHidden()} title='Show/Hide tracked contacts'>
               <FontAwesome name={this.props.contacts.showHidden ? 'star-o' : 'star'} />
             </Button>
@@ -60,13 +69,13 @@ class Toolbar extends Component {
           </ButtonGroup>
         </div>
         <Settings isOpen={this.state.settingsOpen} toggle={() => this.setState({settingsOpen: !this.state.settingsOpen})} />
-        { this.props.sync.errors && this.props.sync.errors.length && (
+        { this.props.sync.errors && this.props.sync.errors.length ? (
           <Alert color='danger' className='sync-alert'>
             {
               this.props.sync.errors.map((error, i) => (<p key={i}>{error}</p>))
             }
           </Alert>
-        ) }
+        ) : null }
       </div>
     )
   }

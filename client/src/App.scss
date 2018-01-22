@@ -32,3 +32,34 @@ $contactListWidth: 500px;
 .btn-xs {
   @include button-size(($btn-padding-y-sm / 2), ($btn-padding-x-sm / 2), ($font-size-sm * 0.75), $btn-line-height-sm, $btn-border-radius-sm);
 }
+
+@media (max-width: map-get($grid-breakpoints,lg)) {
+  .toolbar {
+    top: auto;
+    height: $toolbarWidth;
+    width: 100%;
+    right: 0;
+  }
+
+  .contact-list  {
+    bottom: $toolbarWidth;
+    left: 0;
+    height: auto;
+    width: 100%;
+  }
+
+  .contact-detail-view {
+    position: fixed;
+    top: 100%;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 500;
+    opacity: 0;
+    transition: all 0.25s;
+    &.has-contact {
+      top: 0;
+      opacity: 1;
+    }
+  }
+}

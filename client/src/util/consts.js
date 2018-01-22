@@ -43,3 +43,5 @@ export const UPDATE_FREQUENCIES = [
     'label': 'Biannually'
   }
 ]
+
+export const MOBILE_SIZE = 960

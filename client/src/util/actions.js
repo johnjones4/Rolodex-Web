@@ -88,7 +88,7 @@ export const updateContact = (contact, updateProps) => {
 export const setActiveContact = (contact) => {
   return {
     type: ACTIONS.SET_ACTIVE_CONTACT,
-    id: contact.id
+    id: contact ? contact.id : null
   }
 }
 

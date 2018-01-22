@@ -16,7 +16,7 @@
   align-content: center;
   flex-direction: row;
   background: $gray-800;
-  .btn-group-vertical {
+  .btn-group, .btn-group-vertical {
     margin: auto;
   }
 
