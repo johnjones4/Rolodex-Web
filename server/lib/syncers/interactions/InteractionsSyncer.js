@@ -23,7 +23,7 @@ class InteractionsSyncer extends Syncer {
   }
 
   getLastSyncDate () {
-    return this.config.lastSync || (new Date(new Date().getTime() - (1000 * 60 * 60 * 24 * 180)))
+    return this.config.lastSync ? new Date(this.config.lastSync) : (new Date(new Date().getTime() - (1000 * 60 * 60 * 24 * 180)))
   }
 
   getRecentInteractions (contacts) {
@@ -73,13 +73,13 @@ class InteractionsSyncer extends Syncer {
   }
 
   run () {
+    const now = new Date()
     return this.loadSyncContacts()
       .then((contacts) => {
         return this.getRecentInteractions(contacts)
       })
       .then((interactions) => this.dedupeInteractions(interactions))
       .then((interactions) => {
-        // TODO: may not be deduping properly
         const saveNextInteraction = (index) => {
           if (index < interactions.length) {
             return this.saveInteraction(interactions[index])
@@ -89,6 +89,7 @@ class InteractionsSyncer extends Syncer {
         return saveNextInteraction(0)
       })
       .then(() => {
+        this.setConfigProps({lastSync: now.getTime()})
         return super.run()
       })
   }
