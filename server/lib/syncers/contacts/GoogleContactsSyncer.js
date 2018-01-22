@@ -120,7 +120,7 @@ class GoogleContactsSyncer extends ContactsSyncer {
               object.positions = contact.organizations.map((organization) => {
                 return {
                   organization: organization.name,
-                  title: organization.title
+                  title: organization.title || null
                 }
               }).filter((value) => !(!value.organization) && value.organization.trim().length > 0)
             }

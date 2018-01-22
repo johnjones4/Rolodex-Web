@@ -89,10 +89,11 @@ class ContactsSyncManager {
                 }
                 const updateNextPosition = (index) => {
                   if (index < contact.positions.length) {
-                    if (contact.positions[index].title && contact.positions[index].title.trim().length > 0) {
+                    const position = contact.positions[index]
+                    if ((position.title && position.title.trim().length > 0) || (position.organization && position.organization.trim().length > 0)) {
                       (() => {
-                        if (contact.positions[index].organization) {
-                          return Organization.getOrCreate(contact.positions[index].organization)
+                        if (position.organization && position.organization.trim().length > 0) {
+                          return Organization.getOrCreate(position.organization)
                         } else {
                           return Promise.resolve()
                         }
@@ -101,7 +102,7 @@ class ContactsSyncManager {
                           return Position.getOrCreate(organization || null, _contact)
                         })
                         .then((position) => {
-                          position.set('title', contact.positions[index].title)
+                          position.set('title', position.title || null)
                           return position.save()
                         })
                         .then(() => {
