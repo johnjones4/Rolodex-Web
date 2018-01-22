@@ -23,7 +23,8 @@ const deleteProps = [
   'urls',
   'phoneNumbers',
   'positions',
-  'notes'
+  'notes',
+  'photos'
 ]
 
 exports.loadContact = (req, res, next, id) => {

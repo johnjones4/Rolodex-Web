@@ -69,11 +69,9 @@ export const updateContact = (contact, updateProps) => {
       method: 'POST',
       body: JSON.stringify(newContact),
       headers: {
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + getState().user.token
-        }
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + getState().user.token
       }
     })
       .then((res) => res.json())
@@ -274,7 +272,6 @@ export const uploadLinkedInFile = (file) => {
       body: formData,
       headers: {
         'Accept': 'application/json',
-        'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + getState().user.token
       }
     })
