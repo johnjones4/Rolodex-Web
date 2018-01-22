@@ -23,7 +23,7 @@ class ContactsSyncManager {
       if (index < this.contacts.length) {
         const contact = this.contacts[index]
         UNIQUE_PROPS.forEach((prop) => {
-          contact[prop] = arrayUniq(contact[prop])
+          contact[prop] = arrayUniq(contact[prop]).filter(value => value && typeof value === 'string')
         })
         return this.findContactInDatabase(contact)
           .then((dbContact) => {

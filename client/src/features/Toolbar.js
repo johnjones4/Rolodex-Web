@@ -51,7 +51,7 @@ class Toolbar extends Component {
             <Button color='secondary' title='Settings' onClick={() => this.setState({settingsOpen: true})}>
               <FontAwesome name='gear' />
             </Button>
-            <Button color='secondary' title='Sync data' onClick={() => this.props.startSyncing()}>
+            <Button color='primary' title='Sync data' onClick={() => this.props.startSyncing()}>
               <FontAwesome name='refresh' className={this.props.sync.isSyncing ? 'sync-running' : ''} />
             </Button>
             <Button color='warning' title='Log Out' onClick={() => this.props.logout()}>
@@ -63,7 +63,7 @@ class Toolbar extends Component {
         { this.props.sync.errors && this.props.sync.errors.length && (
           <Alert color='danger' className='sync-alert'>
             {
-              this.props.sync.errors.map((error, i) => (<p key={i}>{error && (error.message || JSON.stringify(error))}</p>))
+              this.props.sync.errors.map((error, i) => (<p key={i}>{error}</p>))
             }
           </Alert>
         ) }

@@ -18,19 +18,21 @@ class GravatarSyncer extends ContactsSyncer {
             photos: []
           }
           return Promise.all(
-            contact.emails.map((email) => {
-              const hash = crypto.createHash('md5').update(email).digest('hex')
-              const url = 'https://www.gravatar.com/avatar/' + hash + '?d=404&s=400'
-              return request(url)
-                .then((response) => {
-                  outputContact.photos.push(url)
-                })
-                .catch((err) => {
-                  if (err.statusCode !== 404) {
-                    throw err
-                  }
-                })
-            })
+            contact.emails
+              .filter(email => email && typeof email === 'string')
+              .map((email) => {
+                const hash = crypto.createHash('md5').update(email).digest('hex')
+                const url = 'https://www.gravatar.com/avatar/' + hash + '?d=404&s=400'
+                return request(url)
+                  .then((response) => {
+                    outputContact.photos.push(url)
+                  })
+                  .catch((err) => {
+                    if (err.statusCode !== 404) {
+                      throw err
+                    }
+                  })
+              })
           )
             .then(() => {
               if (outputContact.photos.length > 0) {

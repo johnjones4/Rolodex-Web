@@ -11,11 +11,8 @@ exports.startSync = (req, res, next) => {
   if (!sync) {
     sync = new Sync()
     sync.run()
-      .catch((err) => {
-        lastSyncErrors = [err.message || err]
-      })
       .then(() => {
-        lastSyncErrors = sync.errors.map(err => err.message || err)
+        lastSyncErrors = sync.errors.slice(0)
         sync = null
       })
   }

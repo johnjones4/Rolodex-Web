@@ -26,14 +26,30 @@ class Sync {
     this.errors = []
   }
 
+  logError (err) {
+    if (typeof err === 'string') {
+      this.errors.push(err)
+    } else if (err.message) {
+      this.errors.push(err.message)
+    } else if (err.errors) {
+      err.errors.forEach((_err) => this.logError(_err))
+    } else if (err.valueOf) {
+      this.errors.push(err.valueOf())
+    } else {
+      this.errors.push(JSON.stringify(err))
+    }
+    console.error(err)
+  }
+
   run () {
     return this.runNext(this.contactsSyncers, 0)
       .then(() => {
-        return this.contactsSyncManager.saveUpdates().catch((err) => this.errors.push(err))
+        return this.contactsSyncManager.saveUpdates().catch((err) => this.logError(err))
       })
       .then(() => {
         return this.runNext(this.interactionSyncers, 0)
       })
+      .catch((err) => this.logError(err))
   }
 
   runNext (syncerList, index) {
@@ -42,7 +58,7 @@ class Sync {
       return syncer.loadConfig()
         .then(() => {
           if (syncer.isReady()) {
-            return syncer.run().catch((err) => this.errors.push(err))
+            return syncer.run().catch((err) => this.logError(err))
           }
         })
         .then(() => {
