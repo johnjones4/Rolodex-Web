@@ -51,7 +51,7 @@ class ContactsSyncManager {
             } else {
               return new Contact({
                 name: contact.name,
-                hidden: true
+                hidden: false
               }).save()
             }
           })
