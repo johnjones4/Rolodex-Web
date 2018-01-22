@@ -19,8 +19,8 @@ exports.init = () => {
 
   app.post('/api/login', routes.login.login)
 
-  app.get('/auth/googlecontacts', authenticate, routes.authorizors.startGoogleContacts)
-  app.get('/auth/googlecontacts/callback', authenticate, routes.authorizors.finishGoogleContacts)
+  app.get('/auth/googlecontacts', routes.authorizors.startGoogleContacts)
+  app.get('/auth/googlecontacts/callback', routes.authorizors.finishGoogleContacts)
 
   app.param('contact', routes.contacts.loadContact)
   app.get('/api/contact', authenticate, routes.contacts.getContacts)

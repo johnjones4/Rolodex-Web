@@ -13,8 +13,8 @@ export const nextInteraction = (contact) => {
       return aDate - bDate
     })
     const lastInteraction = interactions[interactions.length - 1]
-    const lastDate = lastInteraction.date.getTime ? lastInteraction.date.getTime() : Date.parse(lastInteraction.date)
-    const nextDate = new Date(lastDate + contact.updateFrequency)
+    const lastDate = lastInteraction.date.getTime ? lastInteraction.date.getTime() : (isNaN(lastInteraction.date) ? Date.parse(lastInteraction.date) : lastInteraction.date)
+    const nextDate = new Date(lastDate + (contact.updateFrequency || 0))
     return (<span className={nextDate.getTime() <= (new Date().getTime()) ? 'text-danger' : null}>{nextDate.toLocaleDateString()}</span>)
   }
 }
