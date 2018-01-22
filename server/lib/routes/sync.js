@@ -1,27 +1,17 @@
-const Sync = require('../jobs/Sync')
-
-let sync = null
-let lastSyncErrors = []
+const syncLauncher = require('../util/syncLauncher')
 
 exports.checkSync = (req, res, next) => {
   sendStatus(res)
 }
 
 exports.startSync = (req, res, next) => {
-  if (!sync) {
-    sync = new Sync()
-    sync.run()
-      .then(() => {
-        lastSyncErrors = sync.errors.slice(0)
-        sync = null
-      })
-  }
+  syncLauncher.launch()
   sendStatus(res)
 }
 
 const sendStatus = (res) => {
   res.send({
-    isSyncing: !(!sync),
-    errors: sync ? sync.errors : lastSyncErrors
+    isSyncing: syncLauncher.isRunning(),
+    errors: syncLauncher.getErrors()
   })
 }

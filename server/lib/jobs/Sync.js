@@ -23,22 +23,24 @@ class Sync {
       new ExchangeInteractionsSyncer(),
       new IMAPInteractionsSyncer()
     ]
-    this.errors = []
   }
 
   logError (err) {
+    let error
     if (typeof err === 'string') {
-      this.errors.push(err)
+      error = err
     } else if (err.message) {
-      this.errors.push(err.message)
+      error = err.message
     } else if (err.errors) {
       err.errors.forEach((_err) => this.logError(_err))
+      return
     } else if (err.valueOf) {
-      this.errors.push(err.valueOf())
+      error = err.valueOf()
     } else {
-      this.errors.push(JSON.stringify(err))
+      error = JSON.stringify(err)
     }
-    console.error(err)
+    process.send && process.send({error})
+    console.error(error)
   }
 
   run () {
