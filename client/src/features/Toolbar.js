@@ -63,7 +63,7 @@ class Toolbar extends Component {
         { this.props.sync.errors && this.props.sync.errors.length && (
           <Alert color='danger' className='sync-alert'>
             {
-              this.props.sync.errors.map((error, i) => (<p key={i}>{error}</p>))
+              this.props.sync.errors.map((error, i) => (<p key={i}>{error && (error.message || error)}</p>))
             }
           </Alert>
         ) }
