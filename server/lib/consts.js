@@ -24,3 +24,8 @@ exports.user = {
   username: process.env.LOGIN_USERNAME,
   password: process.env.LOGIN_PASSWORD
 }
+
+exports.sync = {
+  schedule: process.env.SYNC_SCHEDULE || '0 0 * * *',
+  tz: process.env.SYNC_TZ || 'America/New_York'
+}
