@@ -4,7 +4,8 @@ import { ACTIONS } from './consts'
 const initialContactsState = {
   'contacts': [],
   'activeContactID': null,
-  'showHidden': false
+  'showHidden': false,
+  'contactsLoading': false
 }
 
 const getContactById = (state, id) => {
@@ -13,9 +14,16 @@ const getContactById = (state, id) => {
 
 const contacts = (state = initialContactsState, action) => {
   switch (action.type) {
+    case ACTIONS.SET_CONTACTS_LOADING:
+      return Object.assign({}, state, {
+        contacts: [],
+        activeContactID: null,
+        contactsLoading: true
+      })
     case ACTIONS.SET_CONTACTS:
       return Object.assign({}, state, {
-        contacts: action.contacts.slice(0)
+        contacts: action.contacts.slice(0),
+        contactsLoading: false
       })
     case ACTIONS.SET_SHOW_HIDDEN:
       return Object.assign({}, state, {

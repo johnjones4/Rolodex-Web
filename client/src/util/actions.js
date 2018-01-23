@@ -44,6 +44,9 @@ export const toggleShowHidden = () => {
 
 export const loadContacts = () => {
   return (dispatch, getState) => {
+    dispatch({
+      type: ACTIONS.SET_CONTACTS_LOADING
+    })
     fetch('/api/contact' + (getState().contacts.showHidden ? '?showHidden=1' : ''), {
       headers: {
         'Accept': 'application/json',

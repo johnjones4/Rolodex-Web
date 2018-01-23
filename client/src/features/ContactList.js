@@ -42,7 +42,7 @@ class ContactList extends Component {
 
   render () {
     return (
-      <div className='contact-list'>
+      <div className={['contact-list', this.props.contacts.contactsLoading ? 'contacts-loading' : ''].join(' ')}>
         <div className='contacts-list-search'>
           <InputGroup>
             <Input type='text' placeholder='Search' value={this.state.searchStr} onChange={(event) => this.setState({searchStr: event.target.value})} />
@@ -105,7 +105,8 @@ const dispatchToProps = (dispatch) => {
 ContactList.propTypes = {
   contacts: PropTypes.shape({
     contacts: PropTypes.array,
-    activeContactID: PropTypes.number
+    activeContactID: PropTypes.number,
+    contactsLoading: PropTypes.bool
   }),
   loadContacts: PropTypes.func,
   updateContact: PropTypes.func,
