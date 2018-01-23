@@ -35,7 +35,8 @@ class ContactsSyncManager {
                   'phoneNumbers',
                   'urls',
                   'positions',
-                  'photos'
+                  'photos',
+                  'tags'
                 ]
               })
                 .then((dbContact) => {
@@ -128,6 +129,10 @@ class ContactsSyncManager {
                     return updateArrayProp(Photo, 'url', 0)
                   case 'positions':
                     return updateNextPosition(0)
+                  case 'tags':
+                    return _contact.setTags(contact.tags.map((tag) => {
+                      return {tag}
+                    }))
                   default:
                     _contact.set(key, contact[key])
                     return Promise.resolve()

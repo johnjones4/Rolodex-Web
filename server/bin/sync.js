@@ -9,10 +9,6 @@ database.init()
     return sync.run()
   })
   .then(() => {
-    if (sync.errors && sync.errors.length > 0) {
-      sync.errors.forEach(err => console.error(err))
-      process.exit(-1)
-    }
     console.log('Done')
     process.exit(0)
   })

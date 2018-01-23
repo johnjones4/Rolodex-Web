@@ -1,14 +1,18 @@
 const {
   GoogleContactsSyncer,
   ExchangeContactsSyncer,
-  LinkedInConnectionsSyncer,
-  GravatarSyncer
+  LinkedInConnectionsSyncer
 } = require('../syncers/contacts')
+const {
+  GravatarSyncer,
+  GitHubSyncer
+} = require('../syncers/details')
 const {
   ExchangeInteractionsSyncer,
   IMAPInteractionsSyncer
 } = require('../syncers/interactions')
 const ContactsSyncManager = require('../syncers/contacts/ContactsSyncManager')
+const MasterDetailSyncer = require('../syncers/details/MasterDetailSyncer')
 
 class Sync {
   constructor () {
@@ -17,7 +21,10 @@ class Sync {
       new GoogleContactsSyncer(this.contactsSyncManager),
       new ExchangeContactsSyncer(this.contactsSyncManager),
       new LinkedInConnectionsSyncer(this.contactsSyncManager),
-      new GravatarSyncer(this.contactsSyncManager)
+      new MasterDetailSyncer([
+        new GravatarSyncer(),
+        new GitHubSyncer()
+      ], this.contactsSyncManager)
     ]
     this.interactionSyncers = [
       new ExchangeInteractionsSyncer(),
@@ -40,7 +47,7 @@ class Sync {
       error = JSON.stringify(err)
     }
     process.send && process.send({error})
-    console.error(error)
+    console.trace(error)
   }
 
   run () {
