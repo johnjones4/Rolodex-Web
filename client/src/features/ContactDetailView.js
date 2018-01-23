@@ -18,7 +18,8 @@ import {
 } from 'reactstrap'
 import {
   INTERACTION_TYPES_STRINGS,
-  UPDATE_FREQUENCIES
+  UPDATE_FREQUENCIES,
+  INTERACTION_TYPES
 } from '../util/consts'
 import {
   updateContact,
@@ -223,6 +224,8 @@ class ContactDetailView extends Component {
                 <ListGroupItem key={i} className='flex-column align-items-start'>
                   <div className='d-flex w-100 justify-content-between'>
                     <ListGroupItemHeading>
+                      <FontAwesome name={this.getTimelineIcon(event)} />
+                      {' '}
                       {event.heading}
                     </ListGroupItemHeading>
                     <small>
@@ -237,6 +240,25 @@ class ContactDetailView extends Component {
         </ListGroup>
       </div>
     )
+  }
+
+  getTimelineIcon (event) {
+    if (event.type === 'interaction') {
+      switch (event.interaction.type) {
+        case INTERACTION_TYPES.EMAIL_RECEIVED:
+          return 'inbox'
+        case INTERACTION_TYPES.EMAIL_SENT:
+          return 'paper-plane'
+        case INTERACTION_TYPES.APPOINTMENT:
+          return 'calendar'
+        default:
+          return null
+      }
+    } else if (event.type === 'note') {
+      return 'sticky-note'
+    } else {
+      return null
+    }
   }
 
   renderTimelineBody (event) {
