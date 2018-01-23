@@ -29,6 +29,7 @@ import FontAwesome from 'react-fontawesome'
 import AddInteraction from '../components/AddInteraction'
 import NoteEditor from '../components/NoteEditor'
 import marked from 'marked'
+import TagsInput from 'react-tagsinput'
 
 class ContactDetailView extends Component {
   constructor (props) {
@@ -95,7 +96,7 @@ class ContactDetailView extends Component {
   renderPreferences (contact) {
     return (
       <div className='contact-detail-view-preferences clearfix'>
-        <h3>Preferences</h3>
+        <h3 className='sr-only'>Preferences</h3>
         <FormGroup row>
           <Label sm={4}>Outreach Frequency</Label>
           <Col sm={8}>
@@ -108,6 +109,14 @@ class ContactDetailView extends Component {
             </Input>
           </Col>
         </FormGroup>
+        <FormGroup row>
+          <Label sm={4}>Tags</Label>
+          <Col sm={8}>
+            <TagsInput
+              value={contact.tags.map((tag) => tag.tag)}
+              onChange={(tags) => this.props.updateContact(contact, {tags: tags.map((tag) => { return {tag} })})} />
+          </Col>
+        </FormGroup>
       </div>
     )
   }
@@ -115,7 +124,7 @@ class ContactDetailView extends Component {
   renderDetails (contact) {
     return (
       <div className='contact-detail-view-details clearfix'>
-        <h3>Contact Information</h3>
+        <h3 className='sr-only'>Contact Information</h3>
         <Row>
           <Col xl='6' lg='12' md='6' sm='6' xs='12'>
             <h3>Emails</h3>

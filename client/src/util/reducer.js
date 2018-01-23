@@ -186,11 +186,27 @@ const user = (state = initialUserState, action) => {
   }
 }
 
+const initialTagsState = {
+  tags: []
+}
+
+const tags = (state = initialTagsState, action) => {
+  switch (action.type) {
+    case ACTIONS.SET_TAGS:
+      return Object.assign({}, state, {
+        tags: action.tags
+      })
+    default:
+      return state
+  }
+}
+
 const rootReducer = combineReducers({
   contacts,
   sync,
   config,
-  user
+  user,
+  tags
 })
 
 export default rootReducer

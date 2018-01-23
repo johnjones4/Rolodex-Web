@@ -1,3 +1,5 @@
+@import '../variables.scss';
+
 .contact-detail-view {
   padding: 1em;
   overflow: scroll;
@@ -30,4 +32,63 @@
       text-decoration: underline;
     }
   }
+}
+
+.react-tagsinput {
+  background-color: #fff;
+  border: 1px solid $gray-400;
+  overflow: hidden;
+  padding-left: 5px;
+  padding-top: 5px;
+  border-radius: $border-radius;
+}
+
+.react-tagsinput--focused {
+  color: $input-focus-color;
+  background-color: $input-focus-bg;
+  border-color: $input-focus-border-color;
+  outline: 0;
+  // Avoid using mixin so we can pass custom focus shadow properly
+  @if $enable-shadows {
+    box-shadow: $input-box-shadow, $input-focus-box-shadow;
+  } @else {
+    box-shadow: $input-focus-box-shadow;
+  }
+}
+
+.react-tagsinput-tag {
+  background-color: $info;
+  border-radius: 2px;
+  color: white;
+  display: inline-block;
+  font-family: sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  margin-bottom: 5px;
+  margin-right: 5px;
+  padding: 5px;
+  border-radius: $border-radius;
+}
+
+.react-tagsinput-remove {
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.react-tagsinput-tag a::before {
+  content: " ×";
+}
+
+.react-tagsinput-input {
+  background: transparent;
+  border: 0;
+  color: #777;
+  font-family: sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  margin-bottom: 6px;
+  margin-top: 1px;
+  outline: none;
+  padding: 5px;
+  width: 80px;
 }

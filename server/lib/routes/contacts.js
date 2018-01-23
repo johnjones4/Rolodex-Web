@@ -10,7 +10,8 @@ const relatedFields = [
   'positions',
   'positions.organization',
   'notes',
-  'photos'
+  'photos',
+  'tags'
 ]
 
 const deleteProps = [
@@ -24,7 +25,8 @@ const deleteProps = [
   'phoneNumbers',
   'positions',
   'notes',
-  'photos'
+  'photos',
+  'tags'
 ]
 
 exports.loadContact = (req, res, next, id) => {
@@ -74,9 +76,16 @@ exports.getContacts = (req, res, next) => {
 
 exports.saveContact = (req, res, next) => {
   const contact = req.contact || new Contact()
+  const tags = req.body.tags.slice(0)
   deleteProps.forEach(prop => delete req.body[prop])
   contact.set(req.body)
-  contact.save()
+  contact.setTags(tags)
+    .then(() => {
+      return contact.save()
+    })
+    .then(() => {
+      return contact.load(['tags'])
+    })
     .then(() => {
       res.send(contact.toJSON())
     })

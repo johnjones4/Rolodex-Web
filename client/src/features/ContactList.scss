@@ -54,3 +54,9 @@
     color: white;
   }
 }
+
+@media (max-width: map-get($grid-breakpoints,lg)) {
+  .contact-list {
+    border-right: none;
+  }
+}

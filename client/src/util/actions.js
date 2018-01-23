@@ -296,3 +296,23 @@ export const uploadLinkedInFile = (file) => {
       })
   }
 }
+
+export const loadTags = () => {
+  return (dispatch, getState) => {
+    fetch('/api/tag', {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + getState().user.token
+      }
+    })
+      .then((res) => res.json())
+      .then((tags) => {
+        dispatch({
+          type: ACTIONS.SET_TAGS,
+          tags
+        })
+      })
+      .catch(err => console.error(err))
+  }
+}

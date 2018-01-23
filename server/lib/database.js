@@ -175,4 +175,27 @@ exports.init = () => {
         }
       })
     })
+    .then(() => {
+      return knex.schema.hasTable('tags').then((exists) => {
+        if (!exists) {
+          return knex.schema.createTable('tags', (table) => {
+            table.increments('id').primary().notNullable()
+            table.string('tag', 255).unique().notNullable()
+            table.timestamps()
+          })
+        }
+      })
+    })
+    .then(() => {
+      return knex.schema.hasTable('contacts_tags').then((exists) => {
+        if (!exists) {
+          return knex.schema.createTable('contacts_tags', (table) => {
+            table.increments('id').primary().notNullable()
+            table.integer('contact_id').notNullable().references('id').inTable('contacts')
+            table.integer('tag_id').notNullable().references('id').inTable('tags')
+            table.unique(['contact_id', 'tag_id'])
+          })
+        }
+      })
+    })
 }

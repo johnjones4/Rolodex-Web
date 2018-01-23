@@ -48,6 +48,7 @@
     "react-dom": "^16.2.0",
     "react-fontawesome": "^1.6.1",
     "react-redux": "^5.0.6",
+    "react-tagsinput": "^3.19.0",
     "react-transition-group": "^2.2.1",
     "reactstrap": "5.0.0-alpha.4",
     "redux": "^3.7.2",

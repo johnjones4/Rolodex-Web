@@ -47,5 +47,7 @@ exports.init = () => {
 
   app.post('/api/upload', authenticate, routes.upload.uploadFile)
 
+  app.get('/api/tag', authenticate, routes.tags.getTags)
+
   return app
 }
