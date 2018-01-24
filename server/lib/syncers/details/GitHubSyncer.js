@@ -10,6 +10,7 @@ class GitHubSyncer extends DetailSyncer {
   updateContact (contact) {
     const gitHubProfileUrls = contact.urls ? contact.urls.filter(url => url.indexOf('github.com') >= 0) : []
     if (gitHubProfileUrls.length > 0) {
+      const startEmailsCount = contact.emails.length
       const outputContact = {
         emails: contact.emails,
         photos: [],
@@ -36,6 +37,9 @@ class GitHubSyncer extends DetailSyncer {
                   if (profile.location) {
                     outputContact.locations.push(profile.location)
                   }
+                  if (profile.email) {
+                    outputContact.emails.push(profile.email)
+                  }
                   outputContact.tags.push('GitHub')
                 }
               })
@@ -48,7 +52,7 @@ class GitHubSyncer extends DetailSyncer {
         })
       )
         .then(() => {
-          if (outputContact.photos.length > 0 || outputContact.locations.length > 0 || outputContact.tags.length > 0) {
+          if (startEmailsCount !== outputContact.emails.length || outputContact.photos.length > 0 || outputContact.locations.length > 0 || outputContact.tags.length > 0) {
             return outputContact
           }
         })

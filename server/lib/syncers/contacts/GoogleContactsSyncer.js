@@ -96,7 +96,8 @@ class GoogleContactsSyncer extends ContactsSyncer {
         if (contacts) {
           return contacts.map((contact) => {
             const object = {
-              googleId: contact.resourceName
+              googleId: contact.resourceName,
+              tags: 'Google Contacts'
             }
             if (contact.names && contact.names.length > 0) {
               object.name = contact.names[0].displayName

@@ -19,8 +19,9 @@ class ExchangeContactsSyncer extends ContactsSyncer {
             .map((record) => {
               const props = record.propertyBag.properties.objects
               const contact = {
-                'exchangeId': props.Id.UniqueId,
-                'name': props.CompleteName.fullName
+                exchangeId: props.Id.UniqueId,
+                name: props.CompleteName.fullName,
+                tags: 'Exchange'
               }
               if (props.EmailAddresses) {
                 contact.emails = _.values(props.EmailAddresses.entries.objects).map((entry) => entry.emailAddress.address)
