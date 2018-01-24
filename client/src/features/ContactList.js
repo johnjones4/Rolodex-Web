@@ -89,7 +89,7 @@ class ContactList extends Component {
             <thead>
               <tr>
                 <th>Name</th>
-                <th className='client-list-next-interaction-column text-center'>Last Interaction</th>
+                <th className='client-list-next-interaction-column text-center'>Next Interaction</th>
                 <th className='client-list-tracking-column text-center'>Tracking</th>
               </tr>
             </thead>
