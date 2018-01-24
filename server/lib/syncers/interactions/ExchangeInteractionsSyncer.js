@@ -75,6 +75,13 @@ class ExchangeInteractionsSyncer extends InteractionsSyncer {
             }).forEach((item) => interactions.push(item))
             return searchNextFolder(folderIds, folderIndex + 1, interactions)
           })
+          .catch((error) => {
+            if (error.message !== 'The collection is empty.') {
+              throw error
+            } else {
+              return searchNextFolder(folderIds, folderIndex + 1, interactions)
+            }
+          })
       } else {
         return Promise.resolve(interactions)
       }
@@ -121,6 +128,13 @@ class ExchangeInteractionsSyncer extends InteractionsSyncer {
           })
           .filter((interaction) => !(!interaction))
       })
+      .catch((error) => {
+        if (error.message !== 'The collection is empty.') {
+          throw error
+        } else {
+          return []
+        }
+      })
   }
 
   getCalendarInterations (exch, contacts) {
@@ -148,6 +162,13 @@ class ExchangeInteractionsSyncer extends InteractionsSyncer {
             }
           })
           .filter((interaction) => !(!interaction))
+      })
+      .catch((error) => {
+        if (error.message !== 'The collection is empty.') {
+          throw error
+        } else {
+          return []
+        }
       })
   }
 

@@ -113,25 +113,29 @@ class IMAPInteractionsSyncer extends InteractionsSyncer {
   }
 
   loadMessages (imap, emailIds) {
-    return new Promise((resolve, reject) => {
-      const messages = []
-      const f = imap.fetch(emailIds, { bodies: ['HEADER.FIELDS (TO CC BCC FROM SUBJECT DATE)'] })
-      f.on('message', (msg, seqno) => {
-        msg.on('body', (stream, info) => {
-          let buffer = ''
-          stream.on('data', (chunk) => {
-            buffer += chunk.toString('utf8')
-          })
-          stream.once('end', () => {
-            const info = Imap.parseHeader(buffer)
-            info.uid = seqno
-            messages.push(info)
+    if (emailIds && emailIds.length > 0) {
+      return new Promise((resolve, reject) => {
+        const messages = []
+        const f = imap.fetch(emailIds, { bodies: ['HEADER.FIELDS (TO CC BCC FROM SUBJECT DATE)'] })
+        f.on('message', (msg, seqno) => {
+          msg.on('body', (stream, info) => {
+            let buffer = ''
+            stream.on('data', (chunk) => {
+              buffer += chunk.toString('utf8')
+            })
+            stream.once('end', () => {
+              const info = Imap.parseHeader(buffer)
+              info.uid = seqno
+              messages.push(info)
+            })
           })
         })
+        f.once('error', (err) => reject(err))
+        f.once('end', () => resolve(messages))
       })
-      f.once('error', (err) => reject(err))
-      f.once('end', () => resolve(messages))
-    })
+    } else {
+      return Promise.resolve([])
+    }
   }
 
   fromEmailsToInteractions (emails, contacts) {

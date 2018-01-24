@@ -44,7 +44,9 @@ class GitHubSyncer extends DetailSyncer {
                 }
               })
               .catch((error) => {
-                console.error(error)
+                if (error.statusCode !== 404) {
+                  throw error
+                }
               })
           } else {
             return Promise.resolve()

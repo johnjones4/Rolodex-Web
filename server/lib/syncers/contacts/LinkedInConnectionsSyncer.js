@@ -23,7 +23,9 @@ class LinkedInConnectionsSyncer extends ContactsSyncer {
       .then((contacts) => {
         if (contacts) {
           return contacts.map((contact) => {
-            const object = {}
+            const object = {
+              tags: ['LinkedIn']
+            }
             if (contact['First Name'] && contact['Last Name']) {
               object.name = [contact['First Name'], contact['Last Name']].join(' ').trim()
             }
