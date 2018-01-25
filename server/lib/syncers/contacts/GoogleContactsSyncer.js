@@ -78,7 +78,8 @@ class GoogleContactsSyncer extends ContactsSyncer {
           'organizations',
           'phoneNumbers',
           'photos',
-          'urls'
+          'urls',
+          'memberships'
         ].join(','),
         resourceName: 'people/me',
         auth: oauth2Client
@@ -125,12 +126,24 @@ class GoogleContactsSyncer extends ContactsSyncer {
                 }
               }).filter((value) => !(!value.organization) && value.organization.trim().length > 0)
             }
+            if (this.contactIsStarred(contact)) {
+              object.hidden = false
+            }
             return object
           })
         } else {
           return []
         }
       })
+  }
+
+  contactIsStarred (contact) {
+    if (contact.memberships) {
+      return contact.memberships.findIndex((membership) => {
+        return membership.contactGroupMembership && membership.contactGroupMembership.contactGroupId === 'starred'
+      }) >= 0
+    }
+    return false
   }
 
   getConfigKeyName () {
