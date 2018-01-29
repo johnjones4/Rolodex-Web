@@ -130,7 +130,10 @@ class ContactsSyncManager {
                   case 'positions':
                     return updateNextPosition(0)
                   case 'tags':
-                    return _contact.setTags(contact.tags.map((tag) => {
+                    const currentTags = _contact.related('tags').map(tag => tag.tag)
+                    const newTags = contact.tags
+                    const combinedTags = arrayUniq(currentTags.concat(newTags))
+                    return _contact.setTags(combinedTags.map((tag) => {
                       return {tag}
                     }))
                   default:
