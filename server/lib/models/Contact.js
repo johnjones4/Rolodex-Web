@@ -86,7 +86,7 @@ const cleanTags = (tags) => {
 
 const compareNewTagSet = (currentTags, newTags) => {
   newTags.sort((a, b) => {
-    a.tag.localeCompare(b.tag)
+    return (a && b && a.tag && b.tag) ? a.tag.localeCompare(b.tag) : 0
   })
   currentTags.sortBy('tag')
   if (newTags.length !== currentTags.length) {
