@@ -22,6 +22,7 @@ class ContactsSyncManager {
     const saveNextContact = (index) => {
       if (index < this.contacts.length) {
         const contact = this.contacts[index]
+        console.log(contact.name)
         UNIQUE_PROPS.forEach((prop) => {
           contact[prop] = arrayUniq(contact[prop]).filter(value => value && typeof value === 'string')
         })
