@@ -23,6 +23,9 @@ class ExchangeContactsSyncer extends ContactsSyncer {
                 name: props.CompleteName.fullName,
                 tags: ['Exchange']
               }
+              if (props.Flag && props.Flag.flagStatus === 1) {
+                contact.hidden = false
+              }
               if (props.EmailAddresses) {
                 contact.emails = _.values(props.EmailAddresses.entries.objects).map((entry) => entry.emailAddress.address)
               }

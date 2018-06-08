@@ -236,14 +236,6 @@ export const setConfig = (key, config) => {
   }
 }
 
-export const setConfigString = (key, configString) => {
-  return {
-    type: ACTIONS.SET_CONFIG_STRING,
-    key,
-    configString
-  }
-}
-
 export const saveConfigs = () => {
   return (dispatch, getState) => {
     Promise.all(
@@ -253,7 +245,6 @@ export const saveConfigs = () => {
         })
         .map((config) => {
           const configDupe = Object.assign({}, config)
-          delete configDupe.configString
           return fetch('/api/config' + (config.id >= 0 ? '/' + config.id : ''), {
             method: config.id >= 0 ? 'POST' : 'PUT',
             body: JSON.stringify(configDupe),

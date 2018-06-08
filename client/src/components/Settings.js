@@ -21,7 +21,6 @@ import {
 } from 'reactstrap'
 import {
   loadConfigs,
-  setConfigString,
   setConfig,
   saveConfigs,
   uploadLinkedInFile
@@ -124,32 +123,128 @@ class Settings extends Component {
             </InputGroup>
           </FormGroup>
         )
+      case 'importer_exchange':
+      case 'interactionsyncer_exchange':
+        return (
+          <div>
+            {
+              [
+                {
+                  label: 'Server URL',
+                  property: 'credentials',
+                  subProperty: 'url'
+                },
+                {
+                  label: 'Username',
+                  property: 'credentials',
+                  subProperty: 'username'
+                },
+                {
+                  label: 'Password',
+                  property: 'credentials',
+                  subProperty: 'password',
+                  type: 'password'
+                }
+              ].map((field) => this.renderSettingsForm(field.label, config, field.property, field.subProperty, field.type || 'text'))
+            }
+          </div>
+        )
+      case 'interactionsyncer_imap':
+        return (
+          <div>
+            {
+              [
+                {
+                  label: 'Host',
+                  property: 'credentials',
+                  subProperty: 'host'
+                },
+                {
+                  label: 'Port',
+                  property: 'credentials',
+                  subProperty: 'port',
+                  type: 'number'
+                },
+                {
+                  label: 'TLS',
+                  property: 'credentials',
+                  subProperty: 'tls',
+                  type: 'checkbox'
+                },
+                {
+                  label: 'Username',
+                  property: 'credentials',
+                  subProperty: 'user'
+                },
+                {
+                  label: 'Password',
+                  property: 'credentials',
+                  subProperty: 'password',
+                  type: 'password'
+                },
+                {
+                  label: 'Inbox Name',
+                  property: 'mailboxes',
+                  subProperty: 'inbox'
+                },
+                {
+                  label: 'Sent Mailbox Name',
+                  property: 'mailboxes',
+                  subProperty: 'sent'
+                }
+              ].map((field) => this.renderSettingsForm(field.label, config, field.property, field.subProperty, field.type || 'text'))
+            }
+          </div>
+        )
       case 'importer_googlecontacts':
         return (<a href='/auth/googlecontacts' target='_blank' className='btn btn-success'>
           {config && config.config && config.config.accessToken ? 'Reauthorize Google' : 'Authorize Google'}
         </a>)
       default:
-        const configStr = config ? (config.configString || JSON.stringify(config.config, null, '  ')) : ''
-        return (<FormGroup>
-          <Label>Settings</Label>
-          <Input
-            className='settings-json'
-            type='textarea'
-            value={configStr}
-            onChange={(event) => this.props.setConfigString(config.key, event.target.value)} />
-        </FormGroup>)
+        return null
     }
   }
 
-  commitChanges () {
-    TABS.forEach((tab) => {
-      const config = this.props.config.configs.find((config) => config.key === tab.key)
-      if (config && config.configString) {
-        try {
-          this.props.setConfig(tab.key, JSON.parse(config.configString))
-        } catch (e) {}
+  renderSettingsForm (label, config, property, subProperty, type) {
+    const setValue = (event) => {
+      switch (type) {
+        case 'checkbox':
+          this.updateSettingSubProperty(config, property, subProperty, event.target.checked)
+          break
+        case 'number':
+          this.updateSettingSubProperty(config, property, subProperty, parseInt(event.target.value))
+          break
+        default:
+          this.updateSettingSubProperty(config, property, subProperty, event.target.value)
       }
-    })
+    }
+    switch (type) {
+      case 'checkbox':
+        return (
+          <FormGroup check key={[property, subProperty].join('-')}>
+            <Label check><Input type={type} checked={type === 'checkbox' && (config.config[property] ? config.config[property][subProperty] : false)} onChange={(event) => setValue(event)} /> {label}</Label>
+            <br /><br />
+          </FormGroup>
+        )
+      default:
+        return (
+          <FormGroup key={[property, subProperty].join('-')}>
+            <Label>{label}</Label>
+            <Input type={type} value={config.config[property] ? config.config[property][subProperty] : ''} onChange={(event) => setValue(event)} />
+          </FormGroup>
+        )
+    }
+  }
+
+  updateSettingSubProperty (config, property, subProperty, value) {
+    if (!config.config[property]) {
+      config.config[property] = {}
+    }
+    config.config[property][subProperty] = value
+    this.props.setConfig(config.key, config.config)
+  }
+
+  commitChanges () {
     this.props.saveConfigs()
     this.props.toggle()
   }
@@ -164,7 +259,6 @@ const stateToProps = (state) => {
 const dispatchToProps = (dispatch) => {
   return bindActionCreators({
     loadConfigs,
-    setConfigString,
     setConfig,
     saveConfigs,
     uploadLinkedInFile
@@ -178,7 +272,6 @@ Settings.propTypes = {
   isOpen: PropTypes.bool,
   toggle: PropTypes.func,
   loadConfigs: PropTypes.func,
-  setConfigString: PropTypes.func,
   setConfig: PropTypes.func,
   saveConfigs: PropTypes.func,
   uploadLinkedInFile: PropTypes.func

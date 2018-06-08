@@ -22,6 +22,7 @@ class ContactsSyncManager {
     const saveNextContact = (index) => {
       if (index < this.contacts.length) {
         const contact = this.contacts[index]
+        console.log(contact.name)
         UNIQUE_PROPS.forEach((prop) => {
           contact[prop] = arrayUniq(contact[prop]).filter(value => value && typeof value === 'string')
         })
@@ -130,7 +131,10 @@ class ContactsSyncManager {
                   case 'positions':
                     return updateNextPosition(0)
                   case 'tags':
-                    return _contact.setTags(contact.tags.map((tag) => {
+                    const currentTags = _contact.related('tags').map(tag => tag.get('tag'))
+                    const newTags = contact.tags
+                    const combinedTags = arrayUniq(currentTags.concat(newTags))
+                    return _contact.setTags(combinedTags.map((tag) => {
                       return {tag}
                     }))
                   default:
