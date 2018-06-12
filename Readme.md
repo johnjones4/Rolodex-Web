@@ -29,7 +29,7 @@ docker run \
 
 To setup Rolodex for development, run the following:
 
-```sh
+```bash
 git clone git@github.com:johnjones4/Rolodex.git
 cd Rolodex/server
 touch .env
@@ -44,7 +44,7 @@ node index.js
 
 In a new terminal tab or window, starting from the `Rolodex/server` directory, run:
 
-```sh
+```bash
 cd ../client
 npm install
 npm start
