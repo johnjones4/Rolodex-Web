@@ -24,3 +24,30 @@ docker run \
   --port 80:80 \
   johnjones4/rolodex
 ```
+
+## Development
+
+To setup Rolodex for development, run the following:
+
+```sh
+git clone git@github.com:johnjones4/Rolodex.git
+cd Rolodex/server
+touch .env
+```
+
+In the `.env` file just created, declared the enviroment variables specified under Setup, except for the `PORT` variable. Then, in that same directory, run:
+
+```
+npm install
+node index.js
+```
+
+In a new terminal tab or window, starting from the `Rolodex/server` directory, run:
+
+```sh
+cd ../client
+npm install
+npm start
+```
+
+The build script will automatically launch a browser pointing to the running application.
