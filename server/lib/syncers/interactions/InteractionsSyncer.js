@@ -3,6 +3,11 @@ const Contact = require('../../models/Contact')
 const Interaction = require('../../models/Interaction')
 
 class InteractionsSyncer extends Syncer {
+  constructor () {
+    super()
+    this.requiresDeepSync = false
+  }
+
   loadSyncContacts () {
     return Contact.query({
       where: {
@@ -20,10 +25,20 @@ class InteractionsSyncer extends Syncer {
           'notes'
         ]
       })
+      .then((contacts) => {
+        const unSyncedContact = contacts.find(contact => {
+          return contact.related('interactions').length === 0
+        })
+        if (unSyncedContact) {
+          console.log(unSyncedContact.get('name') + ' requires deep sync')
+          this.requiresDeepSync = true
+        }
+        return contacts
+      })
   }
 
   getLastSyncDate () {
-    return this.config.lastSync ? new Date(this.config.lastSync) : (new Date(new Date().getTime() - (1000 * 60 * 60 * 24 * 180)))
+    return this.config.lastSync && !this.requiresDeepSync ? new Date(this.config.lastSync) : (new Date(new Date().getTime() - (1000 * 60 * 60 * 24 * 180)))
   }
 
   getRecentInteractions (contacts) {
