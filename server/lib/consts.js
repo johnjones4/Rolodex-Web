@@ -1,6 +1,6 @@
 exports.port = parseInt(process.env.PORT) || 8000
 
-exports.dbPath = process.env.DB_PATH || './database.sqlite'
+exports.dbPath = process.env.DB_PATH || 'postgres://rolodex:rolodex@127.0.0.1:5432/rolodex'
 
 exports.rootUrl = process.env.ROOT_URL || ((process.env.HTTP || 'http') + '://' + (process.env.HOSTNAME || 'localhost') + (exports.port === 80 ? '' : (':' + exports.port)))
 

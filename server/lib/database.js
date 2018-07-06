@@ -1,10 +1,8 @@
 const {dbPath} = require('./consts')
 
 const knex = exports.knex = require('knex')({
-  'client': 'sqlite',
-  'connection': {
-    'filename': dbPath
-  },
+  'client': 'pg',
+  'connection': dbPath,
   'useNullAsDefault': true
 })
 
