@@ -13,7 +13,7 @@ exports.init = () => {
         table.increments('id').primary().notNullable()
         table.string('name', 255).notNullable()
         table.boolean('hidden').notNullable().defaultTo(false)
-        table.integer('updateFrequency')
+        table.bigInteger('updateFrequency')
         table.string('googleId', 255).unique()
         table.string('exchangeId', 512).unique()
         table.timestamps()
