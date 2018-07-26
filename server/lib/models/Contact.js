@@ -5,6 +5,10 @@ bookshelf.plugin('virtuals')
 const Contact = module.exports = bookshelf.Model.extend({
   'tableName': 'contacts',
   'hasTimestamps': true,
+  'parse': function (attrs) {
+    attrs.updateFrequency = parseInt(attrs.updateFrequency)
+    return attrs
+  },
   'emails': function () {
     const Email = require('./Email')
     return this.hasMany(Email)
