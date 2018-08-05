@@ -147,6 +147,8 @@ class ContactsSyncManager {
               })
           })
           .then(() => saveNextContact(index + 1))
+      } else {
+        return Promise.resolve()
       }
     }
     return saveNextContact(0)

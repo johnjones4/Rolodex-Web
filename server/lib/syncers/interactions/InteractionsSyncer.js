@@ -47,7 +47,7 @@ class InteractionsSyncer extends Syncer {
 
   saveInteraction (interaction) {
     console.log('Logging interaction "' + interaction.description + '"')
-    return Interaction.getOrCreate(interaction.source, interaction.externalId)
+    return Interaction.getOrCreate(interaction.source, interaction.externalId, interaction.date)
       .then((_interaction) => {
         const addContactIds = interaction.contacts
           .map(contact => contact.get('id'))

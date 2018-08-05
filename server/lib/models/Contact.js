@@ -7,6 +7,9 @@ const Contact = module.exports = bookshelf.Model.extend({
   'hasTimestamps': true,
   'parse': function (attrs) {
     attrs.updateFrequency = parseInt(attrs.updateFrequency)
+    if (isNaN(attrs.updateFrequency)) {
+      attrs.updateFrequency = null
+    }
     return attrs
   },
   'emails': function () {

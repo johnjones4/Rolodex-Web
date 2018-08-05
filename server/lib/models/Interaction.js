@@ -13,7 +13,7 @@ const Interaction = module.exports = bookshelf.Model.extend({
     return this.hasMany(Note)
   }
 }, {
-  getOrCreate: function (source, externalId) {
+  getOrCreate: function (source, externalId, date) {
     return Interaction
       .forge()
       .query((qb) => {
@@ -31,7 +31,8 @@ const Interaction = module.exports = bookshelf.Model.extend({
         } else {
           const newObj = new Interaction({
             source,
-            external_id: externalId
+            external_id: externalId,
+            date
           })
           return newObj
             .save()
