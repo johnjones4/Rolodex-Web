@@ -27,22 +27,26 @@ class GoogleContactsSyncer extends ContactsSyncer {
     })
   }
 
+  updateConfigWithTokens (tokens) {
+    const config = {
+      accessToken: tokens.access_token
+    }
+    if (tokens.refresh_token) {
+      config.refreshToken = tokens.refresh_token
+    }
+    if (tokens.tokenExpiryDate) {
+      config.tokenExpiryDate = tokens.expiry_date
+    }
+    this.setConfigProps(config)
+  }
+
   finalizeAuthorization (code) {
     return new Promise((resolve, reject) => {
       this.getOAuthClient().getToken(code, (err, tokens) => {
         if (err) {
           reject(err)
         } else {
-          const config = {
-            accessToken: tokens.access_token
-          }
-          if (tokens.refresh_token) {
-            config.refreshToken = tokens.refresh_token
-          }
-          if (tokens.tokenExpiryDate) {
-            config.tokenExpiryDate = tokens.expiry_date
-          }
-          this.setConfigProps(config)
+          this.updateConfigWithTokens(tokens)
           resolve()
         }
       })
@@ -69,30 +73,42 @@ class GoogleContactsSyncer extends ContactsSyncer {
     return new Promise((resolve, reject) => {
       const oauth2Client = this.getOAuthClient()
       this.applyTokensToOAuthClient(oauth2Client)
-      people.people.connections.list({
-        pageSize: 2000,
-        personFields: [
-          'addresses',
-          'emailAddresses',
-          'names',
-          'organizations',
-          'phoneNumbers',
-          'photos',
-          'urls',
-          'memberships'
-        ].join(','),
-        resourceName: 'people/me',
-        auth: oauth2Client
-      }, (err, response) => {
+      oauth2Client.refreshAccessToken((err, tokens) => {
         if (err) {
-          reject(err)
-        } else if (response && response.connections) {
-          resolve(response.connections)
-        } else {
-          throw new Error('Unknown')
+          return reject(err)
         }
+        this.updateConfigWithTokens(tokens)
+        this.applyTokensToOAuthClient(oauth2Client)
+        resolve(oauth2Client)
       })
     })
+      .then(oauth2Client => {
+        return new Promise((resolve, reject) => {
+          people.people.connections.list({
+            pageSize: 2000,
+            personFields: [
+              'addresses',
+              'emailAddresses',
+              'names',
+              'organizations',
+              'phoneNumbers',
+              'photos',
+              'urls',
+              'memberships'
+            ].join(','),
+            resourceName: 'people/me',
+            auth: oauth2Client
+          }, (err, response) => {
+            if (err) {
+              reject(err)
+            } else if (response && response.connections) {
+              resolve(response.connections)
+            } else {
+              throw new Error('Unknown')
+            }
+          })
+        })
+      })
       .then((contacts) => {
         if (contacts) {
           return contacts.map((contact) => {

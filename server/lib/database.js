@@ -14,9 +14,25 @@ exports.init = () => {
         table.string('name', 255).notNullable()
         table.boolean('hidden').notNullable().defaultTo(false)
         table.bigInteger('updateFrequency')
+        table.bigInteger('avgUpdateFrequency')
+        table.float('avgUpdatesPerMonth')
         table.string('googleId', 255).unique()
         table.string('exchangeId', 512).unique()
         table.timestamps()
+      })
+    } else {
+      return knex.schema.table('contacts', (table) => {
+        return knex.schema.hasColumn('contacts', 'avgUpdateFrequency').then(exists => {
+          if (!exists) {
+            table.bigInteger('avgUpdateFrequency')
+          }
+        }).then(() => {
+          return knex.schema.hasColumn('contacts', 'avgUpdatesPerMonth').then(exists => {
+            if (!exists) {
+              table.float('avgUpdatesPerMonth')
+            }
+          })
+        })
       })
     }
   })

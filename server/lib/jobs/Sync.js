@@ -13,6 +13,8 @@ const {
 } = require('../syncers/interactions')
 const ContactsSyncManager = require('../syncers/contacts/ContactsSyncManager')
 const MasterDetailSyncer = require('../syncers/details/MasterDetailSyncer')
+const Contact = require('../models/Contact')
+const _ = require('lodash')
 
 class Sync {
   constructor () {
@@ -58,6 +60,9 @@ class Sync {
       .then(() => {
         return this.runNext(this.interactionSyncers, 0)
       })
+      .then(() => {
+        return this.calcInteractionMetrics()
+      })
       .catch((err) => this.logError(err))
   }
 
@@ -76,6 +81,55 @@ class Sync {
     } else {
       return Promise.resolve()
     }
+  }
+
+  calcInteractionMetrics () {
+    return Contact
+      .query()
+      .fetchAll({
+        withRelated: [
+          'interactions'
+        ]
+      })
+      .then((contacts) => {
+        return Promise.all(
+          contacts.map(contact => {
+            const interactionDates = contact.related('interactions').pluck('date')
+            if (interactionDates.length > 1) {
+              interactionDates.sort()
+
+              let interactionFreqTotal = 0
+              interactionDates.slice(1).forEach((_, i) => {
+                const diff = interactionDates[i].getTime() - interactionDates[i - 1].getTime()
+                interactionFreqTotal += diff
+              })
+              
+              const monthlyInteractionMap = {}
+              interactionDates.forEach(interactionDate => {
+                const mapKey = interactionDate.getFullYear() + '-' + interactionDate.getMonth()
+                if (!monthlyInteractionMap[mapKey]) {
+                  monthlyInteractionMap[mapKey] = 1
+                } else {
+                  monthlyInteractionMap[mapKey]++
+                }
+              })
+              let monthlyTotalsSum = 0
+              const monthlyTotals = _.values(monthlyInteractionMap)
+              monthlyTotals.forEach(monthlyCounts => {
+                monthlyTotalsSum += monthlyCounts
+              })
+
+              contact.set({
+                avgUpdateFrequency: parseInt(interactionFreqTotal / interactionDates.length),
+                avgUpdatesPerMonth: monthlyTotalsSum / monthlyTotals.length
+              })
+              
+              return contact.save()
+            }
+            return Promise.resolve()
+          })
+        )
+      })
   }
 }
 
