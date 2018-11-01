@@ -28,6 +28,7 @@ class GoogleContactsSyncer extends ContactsSyncer {
   }
 
   updateConfigWithTokens (tokens) {
+    console.log(tokens)
     const config = {
       accessToken: tokens.access_token
     }
