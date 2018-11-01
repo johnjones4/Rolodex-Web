@@ -35,6 +35,11 @@ class GravatarSyncer extends DetailSyncer {
             return outputContact
           }
         })
+        .catch(err => {
+          const className = _this.constructor.name
+          const errorMessage = err.message || (err+'')
+          throw new Error(className + ': ' + errorMessage)
+        })
     } else {
       return Promise.resolve()
     }

@@ -107,6 +107,11 @@ class InteractionsSyncer extends Syncer {
         this.setConfigProps({lastSync: now.getTime()})
         return super.run()
       })
+      .catch(err => {
+        const className = _this.constructor.name
+        const errorMessage = err.message || (err+'')
+        throw new Error(className + ': ' + errorMessage)
+      })
   }
 }
 

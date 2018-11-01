@@ -34,6 +34,11 @@ class MasterDetailSyncer extends Syncer {
           }
           return this.updateNextContact(index + 1)
         })
+        .catch(err => {
+          const className = _this.constructor.name
+          const errorMessage = err.message || (err+'')
+          throw new Error(className + ': ' + errorMessage)
+        })
     } else {
       return Promise.resolve()
     }
