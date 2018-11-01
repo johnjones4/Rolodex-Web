@@ -85,7 +85,7 @@ class Sync {
 
   calcInteractionMetrics () {
     return Contact
-      .query()
+      .query({})
       .fetchAll({
         withRelated: [
           'interactions'
