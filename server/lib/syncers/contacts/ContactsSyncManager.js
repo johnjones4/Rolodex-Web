@@ -52,7 +52,7 @@ class ContactsSyncManager {
             } else {
               return new Contact({
                 name: contact.name,
-                hidden: false
+                hidden: true
               }).save()
             }
           })
