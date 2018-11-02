@@ -9,6 +9,7 @@ const Organization = require('../../models/Organization')
 const Photo = require('../../models/Photo')
 const _ = require('lodash')
 const arrayUniq = require('array-uniq')
+const Tag = require('../../models/Tag')
 
 const SYNC_CONTACTS = ['googleId', 'exchangeId', 'emails', 'name']
 const UNIQUE_PROPS = ['emails', 'phoneNumbers', 'urls', 'locations', 'photos']
@@ -28,26 +29,24 @@ class ContactsSyncManager {
         return this.findContactInDatabase(contact)
           .then((dbContact) => {
             if (dbContact) {
-              return dbContact.fetch({
-                withRelated: [
-                  'emails',
-                  'locations',
-                  'phoneNumbers',
-                  'urls',
-                  'positions',
-                  'photos',
-                  'tags'
-                ]
-              })
-                .then((dbContact) => {
-                  return Promise.all([
-                    Promise.all(dbContact.related('emails').map((email) => email.destroy())),
-                    dbContact.locations().detach(dbContact.related('locations').map(location => location.get('id'))),
-                    Promise.all(dbContact.related('phoneNumbers').map((phone) => phone.destroy())),
-                    Promise.all(dbContact.related('urls').map((url) => url.destroy())),
-                    Promise.all(dbContact.related('photos').map((photo) => photo.destroy())),
-                    Promise.all(dbContact.related('positions').map((position) => position.destroy()))
-                  ]).then(() => dbContact)
+              return Contact
+                .forge()
+                .query({
+                  where: {
+                    id: dbContact.get('id')
+                  }
+                })
+                .fetch({
+                  withRelated: [
+                    'emails',
+                    'locations',
+                    'phoneNumbers',
+                    'urls',
+                    'positions',
+                    'positions.organization',
+                    'photos',
+                    'tags'
+                  ]
                 })
             } else {
               return new Contact({
@@ -60,82 +59,144 @@ class ContactsSyncManager {
             console.log('Updating ' + _contact.get('name'))
             return Promise.all(
               _.keys(contact).map((key) => {
-                const updateArrayProp = (Klass, valuePropName, index) => {
-                  if (index < contact[key].length) {
-                    if (contact[key][index] && contact[key][index].trim().length > 0) {
-                      return Klass.getOrCreate(contact[key][index], _contact)
-                        .then(() => {
-                          return updateArrayProp(Klass, valuePropName, index + 1)
-                        })
-                    } else {
-                      return updateArrayProp(Klass, valuePropName, index + 1)
-                    }
-                  } else {
-                    return Promise.resolve()
+                const standardRemoveCallback = (currentValueObject) => {
+                  return currentValueObject.destroy()
+                }
+                const standardAddCallbackGenerator = (Klass) => {
+                  return (newValue) => {
+                    return Klass.getOrCreate(newValue, _contact)
                   }
                 }
-                const updateNextLocation = (index) => {
-                  if (index < contact.locations.length) {
-                    if (contact.locations[index] && contact.locations[index].trim().length > 0) {
-                      return Location
-                        .getOrCreate(contact.locations[index])
-                        .then((location) => _contact.locations().attach([location.get('id')]))
-                        .then(() => updateNextLocation(index + 1))
-                    } else {
-                      return updateNextLocation(index + 1)
+                const standardValuesFetcher = () => {
+                  return _contact.related(key)
+                }
+                const standardValueMatcherGenerator = (valuePropName) => {
+                  return (currentValueObject) => {
+                    return (value) => {
+                      return value === currentValueObject.get(valuePropName)
                     }
-                  } else {
-                    return Promise.resolve()
                   }
                 }
-                const updateNextPosition = (index) => {
-                  if (index < contact.positions.length) {
-                    const position = contact.positions[index]
-                    if ((position.title && position.title.trim().length > 0) || (position.organization && position.organization.trim().length > 0)) {
-                      (() => {
-                        if (position.organization && position.organization.trim().length > 0) {
-                          return Organization.getOrCreate(position.organization)
-                        } else {
+                const standardObjectMatcherGenerator = (valuePropName) => {
+                  return (value) => {
+                    return (object) => {
+                      return value === object.get(valuePropName)
+                    }
+                  }
+                }
+                const updateArrayProp = (name, currentValuesFetcher, valueMatcherGenerator, objectMatcherGenerator, removeCallback, addCallback) => {
+                  let removedCount = 0
+                  let addedCount = 0
+                  return Promise.all(
+                    currentValuesFetcher().map(currentValueObject => {
+                      const found = contact[key].find(valueMatcherGenerator(currentValueObject))
+                      if (!found) {
+                        removedCount++
+                        return removeCallback(currentValueObject)
+                      }
+                      return Promise.resolve()
+                    })
+                  )
+                    .then(() => {
+                      return Promise.all(
+                        contact[key].map(newValue => {
+                          const found = currentValuesFetcher().find(objectMatcherGenerator(newValue))
+                          if (!found) {
+                            addedCount++
+                            return addCallback(newValue)
+                          }
                           return Promise.resolve()
-                        }
-                      })()
-                        .then((organization) => {
-                          return Position.getOrCreate(organization || null, _contact)
                         })
-                        .then((position) => {
-                          position.set('title', position.title || null)
-                          return position.save()
-                        })
-                        .then(() => {
-                          return updateNextPosition(index + 1)
-                        })
-                    } else {
-                      return updateNextPosition(index + 1)
-                    }
-                  } else {
-                    return Promise.resolve()
-                  }
+                      )
+                    })
+                    .then(() => {
+                      console.log('Removed ' + removedCount + ' and added ' + addedCount + ' ' + name + ' records')
+                    })
                 }
                 switch (key) {
                   case 'emails':
-                    return updateArrayProp(Email, 'email', 0)
+                    return updateArrayProp('email', standardValuesFetcher, standardValueMatcherGenerator('email'), standardObjectMatcherGenerator('email'), standardRemoveCallback, standardAddCallbackGenerator(Email))
                   case 'locations':
-                    return updateNextLocation(0)
+                    return updateArrayProp(
+                      'location',
+                      standardValuesFetcher,
+                      standardValueMatcherGenerator('description'),
+                      standardObjectMatcherGenerator('description'),
+                      (currentValueObject) => {
+                        return _contact.locations().detach(currentValueObject.get('id'))
+                      },
+                      (newValue) => {
+                        return Location
+                          .getOrCreate(newValue)
+                          .then((location) => _contact.locations().attach([location.get('id')]))
+                      }
+                    )
                   case 'phoneNumbers':
-                    return updateArrayProp(Phone, 'phone', 0)
+                    return updateArrayProp('phone', standardValuesFetcher, standardValueMatcherGenerator('phone'), standardObjectMatcherGenerator('phone'), standardRemoveCallback, standardAddCallbackGenerator(Phone))
                   case 'urls':
-                    return updateArrayProp(URL, 'url', 0)
+                    return updateArrayProp('url', standardValuesFetcher, standardValueMatcherGenerator('url'), standardObjectMatcherGenerator('url'), standardRemoveCallback, standardAddCallbackGenerator(URL))
                   case 'photos':
-                    return updateArrayProp(Photo, 'url', 0)
+                    return updateArrayProp('photo', standardValuesFetcher, standardValueMatcherGenerator('url'), standardObjectMatcherGenerator('url'), standardRemoveCallback, standardAddCallbackGenerator(Photo))
                   case 'positions':
-                    return updateNextPosition(0)
+                    contact.positions = contact.positions
+                      .filter(position => {
+                        return (position.title && position.title.trim().length > 0) || (position.organization && position.organization.trim().length > 0)
+                      })
+                      .map(position => {
+                        return {
+                          title: position.title ? position.title.trim() : null,
+                          organization: position.organization ? position.organization.trim() : null
+                        }
+                      })
+                    return updateArrayProp(
+                      'position',
+                      standardValuesFetcher,
+                      (currentValueObject) => {
+                        return ({organization, title}) => {
+                          return (currentValueObject.related('organization') === organization || currentValueObject.related('organization').get('name') === organization) && currentValueObject.get('title') === title
+                        }
+                      },
+                      ({organization, title}) => {
+                        return (object) => {
+                          return (object.related('organization') === organization || object.related('organization').get('name') === organization) && object.get('title') === title
+                        }
+                      },
+                      standardRemoveCallback,
+                      ({organization, title}) => {
+                        return (() => {
+                          if (organization) {
+                            return Organization.getOrCreate(organization)
+                          } else {
+                            return Promise.resolve(null)
+                          }
+                        })()
+                          .then(organizationObject => {
+                            return Position.getOrCreate(organizationObject || null, _contact)
+                          })
+                          .then(positionObject => {
+                            positionObject.set('title', title || null)
+                            return positionObject.save()
+                          })
+                      }
+                    )
                   case 'tags':
-                    const currentTags = _contact.related('tags').map(tag => tag.get('tag'))
-                    const newTags = contact.tags
-                    const combinedTags = arrayUniq(currentTags.concat(newTags))
-                    return _contact.setTags(combinedTags.map((tag) => {
-                      return {tag}
-                    }))
+                    contact.tags = contact.tags
+                      .filter(tag => tag && tag.trim().length > 0)
+                      .map(tag => tag.trim())
+                    return updateArrayProp(
+                      'tag',
+                      standardValuesFetcher,
+                      standardValueMatcherGenerator('tag'),
+                      standardObjectMatcherGenerator('tag'),
+                      (currentValueObject) => {
+                        return _contact.tags().detach(currentValueObject.get('id'))
+                      },
+                      (newValue) => {
+                        return Tag
+                          .getOrCreate(newValue)
+                          .then(tag => _contact.tags().attach([tag.get('id')]))
+                      }
+                    )
                   default:
                     _contact.set(key, contact[key])
                     return Promise.resolve()
@@ -145,6 +206,11 @@ class ContactsSyncManager {
               .then(() => {
                 return _contact.save()
               })
+          })
+          .catch(err => {
+            console.error(err)
+            const errorMessage = err.message || (err + '')
+            throw new Error('ContactsSyncManager : ' + errorMessage)
           })
           .then(() => saveNextContact(index + 1))
       } else {

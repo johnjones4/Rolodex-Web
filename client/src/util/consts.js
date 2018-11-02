@@ -43,6 +43,10 @@ export const UPDATE_FREQUENCIES = [
   {
     'value': 180 * 26 * 60 * 60 * 1000,
     'label': 'Biannually'
+  },
+  {
+    'value': 365 * 26 * 60 * 60 * 1000,
+    'label': 'Annually'
   }
 ]
 

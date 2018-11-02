@@ -11,6 +11,13 @@ const Interaction = module.exports = bookshelf.Model.extend({
   'notes': function () {
     const Note = require('./Note')
     return this.hasMany(Note)
+  },
+  'format': function () {
+    const attrs = bookshelf.Model.prototype.format.apply(this, arguments)
+    if (attrs.description && attrs.description.length > 255) {
+      attrs.description = attrs.description.substring(0, 255)
+    }
+    return attrs
   }
 }, {
   getOrCreate: function (source, externalId, date) {

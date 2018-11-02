@@ -7,15 +7,14 @@ class ContactsSyncer extends Syncer {
   }
 
   run () {
-    const _this = this
     return this.fetch()
       .then((contacts) => {
         contacts.forEach(contact => this.contactsSyncManager.commitContact(contact))
         return super.run()
       })
       .catch(err => {
-        const className = _this.constructor.name
-        const errorMessage = err.message || (err+'')
+        const className = this.constructor.name
+        const errorMessage = err.message || (err + '')
         throw new Error(className + ': ' + errorMessage)
       })
   }

@@ -59,8 +59,8 @@ class GitHubSyncer extends DetailSyncer {
           }
         })
         .catch(err => {
-          const className = _this.constructor.name
-          const errorMessage = err.message || (err+'')
+          const className = this.constructor.name
+          const errorMessage = err.message || (err + '')
           throw new Error(className + ': ' + errorMessage)
         })
     } else {

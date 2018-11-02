@@ -27,10 +27,10 @@ class InteractionsSyncer extends Syncer {
       })
       .then((contacts) => {
         const unSyncedContact = contacts.find(contact => {
-          return contact.related('interactions').length === 0
+          return contact.get('updated_at').getTime() >= (new Date().getTime() - (1000 * 60 * 60 * 24))
         })
         if (unSyncedContact) {
-          console.log(unSyncedContact.get('name') + ' requires deep sync')
+          console.log(unSyncedContact.get('name') + ' forces deep sync')
           this.requiresDeepSync = true
         }
         return contacts
@@ -38,7 +38,7 @@ class InteractionsSyncer extends Syncer {
   }
 
   getLastSyncDate () {
-    return this.config.lastSync && !this.requiresDeepSync ? new Date(this.config.lastSync) : (new Date(new Date().getTime() - (1000 * 60 * 60 * 24 * 180)))
+    return this.config.lastSync && !this.requiresDeepSync ? new Date(this.config.lastSync) : (new Date(new Date().getTime() - (1000 * 60 * 60 * 24 * 365)))
   }
 
   getRecentInteractions (contacts) {
@@ -108,8 +108,8 @@ class InteractionsSyncer extends Syncer {
         return super.run()
       })
       .catch(err => {
-        const className = _this.constructor.name
-        const errorMessage = err.message || (err+'')
+        const className = this.constructor.name
+        const errorMessage = err.message || (err + '')
         throw new Error(className + ': ' + errorMessage)
       })
   }
