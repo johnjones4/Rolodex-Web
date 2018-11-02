@@ -47,7 +47,11 @@ class InteractionsSyncer extends Syncer {
 
   saveInteraction (interaction) {
     console.log('Logging interaction "' + interaction.description + '"')
-    return Interaction.getOrCreate(interaction.source, interaction.externalId, interaction.date)
+    let date = interaction.date
+    if (typeof date !== 'object') {
+      date = new Date(Date.parse(date))
+    }
+    return Interaction.getOrCreate(interaction.source, interaction.externalId, date)
       .then((_interaction) => {
         const addContactIds = interaction.contacts
           .map(contact => contact.get('id'))
@@ -59,7 +63,7 @@ class InteractionsSyncer extends Syncer {
         _interaction.set({
           type: interaction.type,
           description: interaction.description,
-          date: interaction.date
+          date
         })
         return _interaction.save()
       })
