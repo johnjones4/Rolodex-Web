@@ -21,19 +21,22 @@ exports.init = () => {
         table.timestamps()
       })
     } else {
-      return knex.schema.table('contacts', (table) => {
-        return knex.schema.hasColumn('contacts', 'avgUpdateFrequency').then(exists => {
-          if (!exists) {
+      return knex.schema.hasColumn('contacts', 'avgUpdateFrequency').then(exists => {
+        if (!exists) {
+          return knex.schema.alterTable('contacts', table => {
             table.bigInteger('avgUpdateFrequency')
-          }
-        }).then(() => {
+          })
+        }
+      })
+        .then(() => {
           return knex.schema.hasColumn('contacts', 'avgUpdatesPerMonth').then(exists => {
             if (!exists) {
-              table.float('avgUpdatesPerMonth')
+              return knex.schema.alterTable('contacts', table => {
+                table.float('avgUpdatesPerMonth')
+              })
             }
           })
         })
-      })
     }
   })
     .then(() => {

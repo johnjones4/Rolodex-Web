@@ -53,16 +53,17 @@ class Sync {
   }
 
   run () {
-    return this.runNext(this.contactsSyncers, 0)
-      .then(() => {
-        return this.contactsSyncManager.saveUpdates().catch((err) => this.logError(err))
-      })
-      .then(() => {
-        return this.runNext(this.interactionSyncers, 0)
-      })
-      .then(() => {
-        return this.calcInteractionMetrics()
-      })
+    // return this.runNext(this.contactsSyncers, 0)
+    //   .then(() => {
+    //     return this.contactsSyncManager.saveUpdates().catch((err) => this.logError(err))
+    //   })
+    //   .then(() => {
+    //     return this.runNext(this.interactionSyncers, 0)
+    //   })
+    //   .then(() => {
+    //     return this.calcInteractionMetrics()
+    //   })
+    return this.calcInteractionMetrics()
       .catch((err) => this.logError(err))
   }
 
@@ -94,18 +95,19 @@ class Sync {
       .then((contacts) => {
         return Promise.all(
           contacts.map(contact => {
-            const interactionDates = contact.related('interactions').pluck('date')
-            if (interactionDates.length > 1) {
-              interactionDates.sort()
+            const validInteractionDates = contact.related('interactions').pluck('date').map(dateStr => Date.parse(dateStr))
+            if (validInteractionDates.length > 1) {
+              validInteractionDates.sort()
 
               let interactionFreqTotal = 0
-              interactionDates.slice(1).forEach((_, i) => {
-                const diff = interactionDates[i].getTime() - interactionDates[i - 1].getTime()
+              validInteractionDates.slice(1).forEach((_, i) => {
+                const diff = validInteractionDates[i + 1] - validInteractionDates[i]
                 interactionFreqTotal += diff
               })
-              
+
               const monthlyInteractionMap = {}
-              interactionDates.forEach(interactionDate => {
+              validInteractionDates.forEach(timeStamp => {
+                const interactionDate = new Date(timeStamp)
                 const mapKey = interactionDate.getFullYear() + '-' + interactionDate.getMonth()
                 if (!monthlyInteractionMap[mapKey]) {
                   monthlyInteractionMap[mapKey] = 1
@@ -120,7 +122,7 @@ class Sync {
               })
 
               contact.set({
-                avgUpdateFrequency: parseInt(interactionFreqTotal / interactionDates.length),
+                avgUpdateFrequency: parseInt(interactionFreqTotal / validInteractionDates.length),
                 avgUpdatesPerMonth: monthlyTotalsSum / monthlyTotals.length
               })
               
