@@ -53,17 +53,16 @@ class Sync {
   }
 
   run () {
-    // return this.runNext(this.contactsSyncers, 0)
-    //   .then(() => {
-    //     return this.contactsSyncManager.saveUpdates().catch((err) => this.logError(err))
-    //   })
-    //   .then(() => {
-    //     return this.runNext(this.interactionSyncers, 0)
-    //   })
-    //   .then(() => {
-    //     return this.calcInteractionMetrics()
-    //   })
-    return this.calcInteractionMetrics()
+    return this.runNext(this.contactsSyncers, 0)
+      .then(() => {
+        return this.contactsSyncManager.saveUpdates().catch((err) => this.logError(err))
+      })
+      .then(() => {
+        return this.runNext(this.interactionSyncers, 0)
+      })
+      .then(() => {
+        return this.calcInteractionMetrics()
+      })
       .catch((err) => this.logError(err))
   }
 
@@ -106,14 +105,26 @@ class Sync {
               })
 
               const monthlyInteractionMap = {}
+              const firstDate = new Date(validInteractionDates[0])
+              const lastDate = new Date()
+              let curDate = firstDate
+              while (curDate.getTime() <= lastDate.getTime()) {
+                const mapKey = curDate.getFullYear() + '-' + curDate.getMonth()
+                monthlyInteractionMap[mapKey] = 0
+                let month = curDate.getMonth()
+                let year = curDate.getFullYear()
+                if (month < 11) {
+                  month++
+                } else {
+                  month = 0
+                  year++
+                }
+                curDate = new Date(year, month, 1)
+              }
               validInteractionDates.forEach(timeStamp => {
                 const interactionDate = new Date(timeStamp)
                 const mapKey = interactionDate.getFullYear() + '-' + interactionDate.getMonth()
-                if (!monthlyInteractionMap[mapKey]) {
-                  monthlyInteractionMap[mapKey] = 1
-                } else {
-                  monthlyInteractionMap[mapKey]++
-                }
+                monthlyInteractionMap[mapKey]++
               })
               let monthlyTotalsSum = 0
               const monthlyTotals = _.values(monthlyInteractionMap)
