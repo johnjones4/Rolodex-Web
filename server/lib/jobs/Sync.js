@@ -94,50 +94,57 @@ class Sync {
       .then((contacts) => {
         return Promise.all(
           contacts.map(contact => {
-            const validInteractionDates = contact.related('interactions').pluck('date').map(dateStr => Date.parse(dateStr))
-            if (validInteractionDates.length > 1) {
-              validInteractionDates.sort()
+            if (contact) {
+              const validInteractionDates = contact
+                .related('interactions')
+                .pluck('date')
+                .filter(dateStr => typeof dateStr === 'string' && dateStr.trim().length > 0)
+                .map(dateStr => Date.parse(dateStr))
+                
+              if (validInteractionDates.length > 1) {
+                validInteractionDates.sort()
 
-              let interactionFreqTotal = 0
-              validInteractionDates.slice(1).forEach((_, i) => {
-                const diff = validInteractionDates[i + 1] - validInteractionDates[i]
-                interactionFreqTotal += diff
-              })
+                let interactionFreqTotal = 0
+                validInteractionDates.slice(1).forEach((_, i) => {
+                  const diff = validInteractionDates[i + 1] - validInteractionDates[i]
+                  interactionFreqTotal += diff
+                })
 
-              const monthlyInteractionMap = {}
-              const firstDate = new Date(validInteractionDates[0])
-              const lastDate = new Date()
-              let curDate = firstDate
-              while (curDate.getTime() <= lastDate.getTime()) {
-                const mapKey = curDate.getFullYear() + '-' + curDate.getMonth()
-                monthlyInteractionMap[mapKey] = 0
-                let month = curDate.getMonth()
-                let year = curDate.getFullYear()
-                if (month < 11) {
-                  month++
-                } else {
-                  month = 0
-                  year++
+                const monthlyInteractionMap = {}
+                const firstDate = new Date(validInteractionDates[0])
+                const lastDate = new Date()
+                let curDate = firstDate
+                while (curDate.getTime() <= lastDate.getTime()) {
+                  const mapKey = curDate.getFullYear() + '-' + curDate.getMonth()
+                  monthlyInteractionMap[mapKey] = 0
+                  let month = curDate.getMonth()
+                  let year = curDate.getFullYear()
+                  if (month < 11) {
+                    month++
+                  } else {
+                    month = 0
+                    year++
+                  }
+                  curDate = new Date(year, month, 1)
                 }
-                curDate = new Date(year, month, 1)
-              }
-              validInteractionDates.forEach(timeStamp => {
-                const interactionDate = new Date(timeStamp)
-                const mapKey = interactionDate.getFullYear() + '-' + interactionDate.getMonth()
-                monthlyInteractionMap[mapKey]++
-              })
-              let monthlyTotalsSum = 0
-              const monthlyTotals = _.values(monthlyInteractionMap)
-              monthlyTotals.forEach(monthlyCounts => {
-                monthlyTotalsSum += monthlyCounts
-              })
+                validInteractionDates.forEach(timeStamp => {
+                  const interactionDate = new Date(timeStamp)
+                  const mapKey = interactionDate.getFullYear() + '-' + interactionDate.getMonth()
+                  monthlyInteractionMap[mapKey]++
+                })
+                let monthlyTotalsSum = 0
+                const monthlyTotals = _.values(monthlyInteractionMap)
+                monthlyTotals.forEach(monthlyCounts => {
+                  monthlyTotalsSum += monthlyCounts
+                })
 
-              contact.set({
-                avgUpdateFrequency: parseInt(interactionFreqTotal / validInteractionDates.length),
-                avgUpdatesPerMonth: monthlyTotalsSum / monthlyTotals.length
-              })
-              
-              return contact.save()
+                contact.set({
+                  avgUpdateFrequency: parseInt(interactionFreqTotal / validInteractionDates.length),
+                  avgUpdatesPerMonth: monthlyTotalsSum / monthlyTotals.length
+                })
+                
+                return contact.save()
+              }
             }
             return Promise.resolve()
           })
