@@ -15,6 +15,7 @@ exports.init = () => {
         table.boolean('hidden').notNullable().defaultTo(false)
         table.bigInteger('updateFrequency')
         table.bigInteger('avgUpdateFrequency')
+        table.bigInteger('recUpdateFrequency')
         table.float('avgUpdatesPerMonth')
         table.string('googleId', 255).unique()
         table.string('exchangeId', 512).unique()
@@ -33,6 +34,15 @@ exports.init = () => {
             if (!exists) {
               return knex.schema.alterTable('contacts', table => {
                 table.float('avgUpdatesPerMonth')
+              })
+            }
+          })
+        })
+        .then(() => {
+          return knex.schema.hasColumn('contacts', 'recUpdateFrequency').then(exists => {
+            if (!exists) {
+              return knex.schema.alterTable('contacts', table => {
+                table.bigInteger('recUpdateFrequency')
               })
             }
           })

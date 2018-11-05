@@ -71,23 +71,25 @@ class FrequencyRecommender extends Recommender {
       const avgUpdateFrequency = parseInt(interactionFreqTotal / interactionFreqCount)
       const avgUpdatesPerMonth = monthlyTotalsSum / monthlyTotals.length
 
-      let updateFrequency = null
-      if (contact.get('updateFrequency') === null) {
-        if (avgUpdateFrequency < VALID_UPDATE_FREQUENCIES[0]) {
-          updateFrequency = VALID_UPDATE_FREQUENCIES[0]
-        } else if (avgUpdateFrequency > VALID_UPDATE_FREQUENCIES[VALID_UPDATE_FREQUENCIES.length - 1]) {
-          updateFrequency = VALID_UPDATE_FREQUENCIES[VALID_UPDATE_FREQUENCIES.length - 1]
-        } else {
-          let frequencyIndex = 1
-          while (updateFrequency === null && frequencyIndex < VALID_UPDATE_FREQUENCIES.length) {
-            if (avgUpdateFrequency >= VALID_UPDATE_FREQUENCIES[frequencyIndex - 1] && avgUpdateFrequency <= VALID_UPDATE_FREQUENCIES[frequencyIndex]) {
-              updateFrequency = VALID_UPDATE_FREQUENCIES[frequencyIndex]
-            }
-            frequencyIndex++
+      let recUpdateFrequency = null
+      if (avgUpdateFrequency < VALID_UPDATE_FREQUENCIES[0]) {
+        recUpdateFrequency = VALID_UPDATE_FREQUENCIES[0]
+      } else if (avgUpdateFrequency > VALID_UPDATE_FREQUENCIES[VALID_UPDATE_FREQUENCIES.length - 1]) {
+        recUpdateFrequency = VALID_UPDATE_FREQUENCIES[VALID_UPDATE_FREQUENCIES.length - 1]
+      } else {
+        let frequencyIndex = 1
+        while (recUpdateFrequency === null && frequencyIndex < VALID_UPDATE_FREQUENCIES.length) {
+          if (avgUpdateFrequency >= VALID_UPDATE_FREQUENCIES[frequencyIndex - 1] && avgUpdateFrequency <= VALID_UPDATE_FREQUENCIES[frequencyIndex]) {
+            recUpdateFrequency = VALID_UPDATE_FREQUENCIES[frequencyIndex]
           }
+          frequencyIndex++
         }
       }
-      if (updateFrequency === null) {
+
+      let updateFrequency = null
+      if (contact.get('updateFrequency') === null && recUpdateFrequency !== null) {
+        updateFrequency = recUpdateFrequency
+      } else if (updateFrequency === null) {
         updateFrequency = contact.get('updateFrequency')
       }
 
@@ -95,6 +97,7 @@ class FrequencyRecommender extends Recommender {
         avgUpdateFrequency,
         avgUpdatesPerMonth,
         updateFrequency,
+        recUpdateFrequency,
         hidden: contact.get('hidden') === false ? false : (avgUpdatesPerMonth < 1)
       })
 

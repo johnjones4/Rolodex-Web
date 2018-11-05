@@ -10,6 +10,14 @@ const Contact = module.exports = bookshelf.Model.extend({
     if (isNaN(attrs.updateFrequency)) {
       attrs.updateFrequency = null
     }
+    attrs.recUpdateFrequency = parseInt(attrs.recUpdateFrequency)
+    if (isNaN(attrs.recUpdateFrequency)) {
+      attrs.recUpdateFrequency = null
+    }
+    attrs.avgUpdateFrequency = parseInt(attrs.avgUpdateFrequency)
+    if (isNaN(attrs.avgUpdateFrequency)) {
+      attrs.avgUpdateFrequency = null
+    }
     return attrs
   },
   'emails': function () {

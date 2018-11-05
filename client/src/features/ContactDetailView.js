@@ -14,7 +14,8 @@ import {
   Label,
   Input,
   ButtonGroup,
-  Button
+  Button,
+  FormText
 } from 'reactstrap'
 import {
   INTERACTION_TYPES_STRINGS,
@@ -30,6 +31,9 @@ import AddInteraction from '../components/AddInteraction'
 import NoteEditor from '../components/NoteEditor'
 import marked from 'marked'
 import TagsInput from 'react-tagsinput'
+import {
+  updateFrequencyLabel
+} from '../util/functions'
 
 class ContactDetailView extends Component {
   constructor (props) {
@@ -107,6 +111,9 @@ class ContactDetailView extends Component {
               <option value=''>Select One</option>
               { UPDATE_FREQUENCIES.map(freq => (<option key={freq.value} value={freq.value}>{freq.label}</option>))}
             </Input>
+            { contact.recUpdateFrequency !== null && contact.recUpdateFrequency !== contact.updateFrequency && (
+              <FormText color='muted'><FontAwesome name='exclamation-triangle' /> Recommended: { updateFrequencyLabel(contact.recUpdateFrequency) }</FormText>
+            ) }
           </Col>
         </FormGroup>
         <FormGroup row>

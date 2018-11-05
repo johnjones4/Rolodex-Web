@@ -1,4 +1,7 @@
 import React from 'react'
+import {
+  UPDATE_FREQUENCIES
+} from './consts'
 
 export const nextInteraction = (contact) => {
   if (contact.hidden) {
@@ -17,4 +20,19 @@ export const nextInteraction = (contact) => {
     const nextDate = new Date(lastDate + (contact.updateFrequency || 0))
     return (<span className={nextDate.getTime() <= (new Date().getTime()) ? 'text-danger' : null}>{nextDate.toLocaleDateString()}</span>)
   }
+}
+
+export const updateFrequencyLabel = (millis) => {
+  const foundFreq = UPDATE_FREQUENCIES.find((freq) => {
+    return freq.value === millis
+  })
+  if (foundFreq) {
+    return foundFreq.label
+  } else {
+    return null
+  }
+}
+
+export const recommendationsAvailable = (contact) => {
+  return contact.recUpdateFrequency !== null && contact.updateFrequency !== contact.recUpdateFrequency
 }

@@ -20,7 +20,8 @@ import {
 } from 'reactstrap'
 import FontAwesome from 'react-fontawesome'
 import {
-  nextInteraction
+  nextInteraction,
+  recommendationsAvailable
 } from '../util/functions'
 
 class ContactList extends Component {
@@ -98,7 +99,11 @@ class ContactList extends Component {
                 this.contactsList().map((contact) => {
                   return (
                     <tr key={contact.id} className={['contant-list-item', (this.props.contacts.activeContactID === contact.id ? 'contact-list-item-selected' : '')].join(' ')} onClick={() => this.props.setActiveContact(contact)}>
-                      <td className='contacts-list-name'>{contact.name}</td>
+                      <td className='contacts-list-name'>
+                        {contact.name}
+                        { ' ' }
+                        { recommendationsAvailable(contact) && (<FontAwesome name='exclamation-triangle' />) }
+                      </td>
                       <td className='contacts-list-next-interaction text-center'>{nextInteraction(contact)}</td>
                       <td className='contacts-list-hidden-toggle text-center'>
                         <Button className='border' color='light' size='sm' onClick={() => this.props.updateContact(contact, {hidden: !contact.hidden})}>
