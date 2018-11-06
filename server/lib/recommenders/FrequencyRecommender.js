@@ -72,9 +72,6 @@ class FrequencyRecommender extends Recommender {
       monthlyTotals.forEach(monthlyCounts => {
         monthlyTotalsSum += monthlyCounts
       })
-      if (contact.get('id') === 52) {
-        console.log(monthlyInteractionMap, monthlyTotalsSum, monthlyTotals.length )
-      }
 
       const avgUpdateFrequency = parseInt(interactionFreqTotal / interactionFreqCount)
       const avgUpdatesPerMonth = monthlyTotalsSum / monthlyTotals.length
