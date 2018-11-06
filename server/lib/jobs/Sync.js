@@ -21,17 +21,17 @@ class Sync {
   constructor () {
     this.contactsSyncManager = new ContactsSyncManager()
     this.contactsSyncers = [
-      new GoogleContactsSyncer(this.contactsSyncManager),
-      new ExchangeContactsSyncer(this.contactsSyncManager),
-      new LinkedInConnectionsSyncer(this.contactsSyncManager),
-      new MasterDetailSyncer([
-        new GravatarSyncer(),
-        new GitHubSyncer()
-      ], this.contactsSyncManager)
+      // new GoogleContactsSyncer(this.contactsSyncManager),
+      // new ExchangeContactsSyncer(this.contactsSyncManager),
+      // new LinkedInConnectionsSyncer(this.contactsSyncManager),
+      // new MasterDetailSyncer([
+      //   new GravatarSyncer(),
+      //   new GitHubSyncer()
+      // ], this.contactsSyncManager)
     ]
     this.interactionSyncers = [
-      new ExchangeInteractionsSyncer(),
-      new IMAPInteractionsSyncer()
+      // new ExchangeInteractionsSyncer(),
+      // new IMAPInteractionsSyncer()
     ]
     this.recommenders = [
       new FrequencyRecommender()

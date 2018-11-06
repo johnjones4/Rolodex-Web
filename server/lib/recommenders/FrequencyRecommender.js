@@ -1,13 +1,14 @@
 const Recommender = require('./Recommender')
 const _ = require('lodash')
 
-const VALID_UPDATE_FREQUENCIES = [
-  30 * 26 * 60 * 60 * 1000, // Monthly
-  60 * 26 * 60 * 60 * 1000, // Two Months
-  90 * 26 * 60 * 60 * 1000, // Quarterly
-  180 * 26 * 60 * 60 * 1000, // Biannually
-  365 * 26 * 60 * 60 * 1000 // Annually
-]
+const VALID_UPDATE_FREQUENCIES = {
+  monthly: 30 * 26 * 60 * 60 * 1000, // Monthly
+  every_two_months: 60 * 26 * 60 * 60 * 1000, // Two Months
+  quarterly: 90 * 26 * 60 * 60 * 1000, // Quarterly
+  biannually: 180 * 26 * 60 * 60 * 1000, // Biannually
+  annually: 365 * 26 * 60 * 60 * 1000 // Annually
+}
+// const VALID_UPDATE_FREQUENCIES_SERIES = _.values(VALID_UPDATE_FREQUENCIES)
 
 class FrequencyRecommender extends Recommender {
   makeContactRecommendations (contact) {
@@ -42,11 +43,11 @@ class FrequencyRecommender extends Recommender {
       }
 
       const monthlyInteractionMap = {}
-      const firstDate = validInteractionDates[0]
-      const lastDate = new Date()
+      const firstDate = new Date(validInteractionDates[0].getFullYear(), validInteractionDates[0].getMonth(), validInteractionDates[0].getDate(), 0, 0, 0)
+      const lastDate = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 0, 0, 0)
       let curDate = firstDate
       while (curDate.getTime() <= lastDate.getTime()) {
-        const mapKey = curDate.getFullYear() + '-' + curDate.getMonth()
+        const mapKey = curDate.getFullYear() + '-' + (curDate.getMonth() + 1)
         monthlyInteractionMap[mapKey] = 0
         let month = curDate.getMonth()
         let year = curDate.getFullYear()
@@ -56,34 +57,52 @@ class FrequencyRecommender extends Recommender {
           month = 0
           year++
         }
-        curDate = new Date(year, month, 1)
+        curDate = new Date(year, month, 1, 0, 0, 0, 0)
       }
-      validInteractionDates.forEach(interactionDate => {
-        const mapKey = interactionDate.getFullYear() + '-' + interactionDate.getMonth()
-        monthlyInteractionMap[mapKey]++
+      validInteractionDates.forEach((interactionDate, index) => {
+        const mapKey = interactionDate.getFullYear() + '-' + (interactionDate.getMonth() + 1)
+        monthlyInteractionMap[mapKey] = 1
       })
+      // _.keys(monthlyInteractionMap).forEach((key, index) => {
+      //   const weight = 1 + ((index / (validInteractionDates.length - 1)) * 0.5)
+      //   monthlyInteractionMap[key] = monthlyInteractionMap[key] * weight
+      // })
       let monthlyTotalsSum = 0
       const monthlyTotals = _.values(monthlyInteractionMap)
       monthlyTotals.forEach(monthlyCounts => {
         monthlyTotalsSum += monthlyCounts
       })
+      if (contact.get('id') === 52) {
+        console.log(monthlyInteractionMap, monthlyTotalsSum, monthlyTotals.length )
+      }
 
       const avgUpdateFrequency = parseInt(interactionFreqTotal / interactionFreqCount)
       const avgUpdatesPerMonth = monthlyTotalsSum / monthlyTotals.length
 
       let recUpdateFrequency = null
-      if (avgUpdateFrequency < VALID_UPDATE_FREQUENCIES[0]) {
-        recUpdateFrequency = VALID_UPDATE_FREQUENCIES[0]
-      } else if (avgUpdateFrequency > VALID_UPDATE_FREQUENCIES[VALID_UPDATE_FREQUENCIES.length - 1]) {
-        recUpdateFrequency = VALID_UPDATE_FREQUENCIES[VALID_UPDATE_FREQUENCIES.length - 1]
-      } else {
-        let frequencyIndex = 1
-        while (recUpdateFrequency === null && frequencyIndex < VALID_UPDATE_FREQUENCIES.length) {
-          if (avgUpdateFrequency >= VALID_UPDATE_FREQUENCIES[frequencyIndex - 1] && avgUpdateFrequency <= VALID_UPDATE_FREQUENCIES[frequencyIndex]) {
-            recUpdateFrequency = VALID_UPDATE_FREQUENCIES[frequencyIndex]
-          }
-          frequencyIndex++
-        }
+      // if (avgUpdateFrequency < VALID_UPDATE_FREQUENCIES_SERIES[0]) {
+      //   recUpdateFrequency = VALID_UPDATE_FREQUENCIES_SERIES[0]
+      // } else if (avgUpdateFrequency > VALID_UPDATE_FREQUENCIES_SERIES[VALID_UPDATE_FREQUENCIES_SERIES.length - 1]) {
+      //   recUpdateFrequency = VALID_UPDATE_FREQUENCIES_SERIES[VALID_UPDATE_FREQUENCIES_SERIES.length - 1]
+      // } else {
+      //   let frequencyIndex = 1
+      //   while (recUpdateFrequency === null && frequencyIndex < VALID_UPDATE_FREQUENCIES_SERIES.length) {
+      //     if (avgUpdateFrequency >= VALID_UPDATE_FREQUENCIES_SERIES[frequencyIndex - 1] && avgUpdateFrequency <= VALID_UPDATE_FREQUENCIES_SERIES[frequencyIndex]) {
+      //       recUpdateFrequency = VALID_UPDATE_FREQUENCIES_SERIES[frequencyIndex]
+      //     }
+      //     frequencyIndex++
+      //   }
+      // }
+      if (avgUpdatesPerMonth >= 1) {
+        recUpdateFrequency = VALID_UPDATE_FREQUENCIES.monthly
+      } else if (avgUpdatesPerMonth >= 0.5) {
+        recUpdateFrequency = VALID_UPDATE_FREQUENCIES.every_two_months
+      } else if (avgUpdatesPerMonth >= (1.0 / 3.0)) {
+        recUpdateFrequency = VALID_UPDATE_FREQUENCIES.quarterly
+      } else if (avgUpdatesPerMonth >= (1.0 / 6.0)) {
+        recUpdateFrequency = VALID_UPDATE_FREQUENCIES.biannually
+      } else if (avgUpdatesPerMonth >= (1.0 / 12.0)) {
+        recUpdateFrequency = VALID_UPDATE_FREQUENCIES.annually
       }
 
       let updateFrequency = null
@@ -98,7 +117,7 @@ class FrequencyRecommender extends Recommender {
         avgUpdatesPerMonth,
         updateFrequency,
         recUpdateFrequency,
-        hidden: contact.get('hidden') === false ? false : (avgUpdatesPerMonth < 1)
+        hidden: contact.get('hidden') === false ? false : (avgUpdatesPerMonth > 1)
       })
 
       return contact.save()
