@@ -114,7 +114,7 @@ class FrequencyRecommender extends Recommender {
         avgUpdatesPerMonth,
         updateFrequency,
         recUpdateFrequency,
-        hidden: contact.get('hidden') === false ? false : (avgUpdatesPerMonth > 1)
+        hidden: contact.get('hidden') === false ? false : (avgUpdatesPerMonth < 0.25)
       })
 
       return contact.save()
